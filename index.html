@@ -126,6 +126,7 @@ ul.tips{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 .hist{display:flex;flex-direction:column}
 .hist div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .hist div:first-child{border-top:0}
+.hist div>span:last-child{text-align:right}
 .toast{position:fixed;left:50%;bottom:calc(84px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:30;max-width:90vw;text-align:center}
 .overlay{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;flex-direction:column;overflow:auto;padding:calc(12px + var(--safe-t)) 16px calc(16px + var(--safe-b))}
 .overlay .box{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px;flex:1}
@@ -190,7 +191,7 @@ const AUTHOR = {
   purpose: "Aplikace vznikla jako součást seminární práce o kompenzačním cvičení pro maséry (2026).",
   email: "eruzickaa@seznam.cz"
 };
-const VERSION = "2.2";
+const VERSION = "2.3";
 
 /* ================= Cviky a sestavy ================= */
 const EX = {
@@ -506,7 +507,10 @@ function vErgo(){
 
 function vProfil(){
   const p=S.profile||{}, s=S.settings;
-  return `<div class="card"><h2>Můj profil</h2>${profileForm(p,"pf")}<button class="btn block" data-saveprofile="pf">Uložit profil</button></div>
+  const card=profEdit
+    ?`<div class="card"><h2>Upravit profil</h2>${profileForm(p,"pf")}<button class="btn block" data-saveprofile="pf">Uložit profil</button><button class="btn ghost block" data-canceledit>Zrušit</button></div>`
+    :`<div class="card"><div class="row spread"><h2>Můj profil</h2></div>${profileSummary(p)}<button class="btn quiet block" data-editprofile>Upravit</button></div>`;
+  return `${card}
   <div class="card"><h2>Nastavení</h2>
     <div class="field"><span class="lbl">Velikost písma</span><div class="seg" role="group" aria-label="Velikost písma">${[[1,"Normální"],[1.12,"Větší"],[1.25,"Největší"]].map(([v,n])=>`<button data-scale="${v}" aria-pressed="${s.scale==v}">${n}</button>`).join("")}</div></div>
     <label class="check"><input type="checkbox" data-set="sound" ${s.sound?"checked":""}><span>Zvukové signály při cvičení</span></label>
@@ -526,6 +530,19 @@ function vProfil(){
     <p class="note small">Aplikace slouží k prevenci a nenahrazuje vyšetření lékařem nebo fyzioterapeutem. Při bolesti, která neustupuje, se poraďte s odborníkem.</p>
     <p class="small muted">Verze ${VERSION}</p></div>`;}
 
+let profEdit=false;
+function profileSummary(p){
+  const row=(k,v)=>`<div><span class="muted">${k}</span><span>${v}</span></div>`;
+  const areas=(p.areas||[]).map(a=>(AREAS.find(x=>x[0]===a)||[,a])[1]).join(", ")||"neuvedeno";
+  return `<div class="hist">
+    ${row("Jméno",esc(p.name||"–"))}
+    ${row("Oslovení",esc(callName()||"–"))}
+    ${row("Praxe",p.years!=null?p.years+" "+plural(p.years,"rok","roky","let"):"neuvedeno")}
+    ${row("Masáže týdně",p.hours!=null?p.hours+" "+plural(p.hours,"hodina","hodiny","hodin"):"neuvedeno")}
+    ${row("Dominantní ruka",p.hand==="L"?"levá":"pravá")}
+    ${row("Zatížené oblasti",esc(areas))}
+    ${row("Týdenní cíl",(p.goal||5)+" "+plural(p.goal||5,"den","dny","dní")+" cvičení")}
+  </div>`;}
 function profileForm(p,id){
   const areas=p.areas||[];
   return `<div class="stack" id="${id}">
@@ -559,7 +576,7 @@ function render(){const k=route();
   if(k==="cviceni") paintWatch();}
 document.getElementById("tabs").innerHTML=TABS.map(([k,n,p])=>`<button class="tab" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${p}"/></svg>${n}</button>`).join("");
 function setDate(){document.getElementById("today").textContent=new Date().toLocaleDateString("cs-CZ",{weekday:"long",day:"numeric",month:"long"});}
-addEventListener("hashchange",()=>{render();scrollTo(0,0);});
+addEventListener("hashchange",()=>{if(route()!=="profil")profEdit=false;render();scrollTo(0,0);});
 function applyScale(){document.documentElement.style.fontSize=(16*(S.settings.scale||1))+"px";}
 
 /* ================= Toast a dialog ================= */
@@ -704,7 +721,9 @@ document.addEventListener("click",async ev=>{const t=ev.target.closest("button")
   else if(ds.saveprofile){const p=readProfile(ds.saveprofile);if(!p.name){toast("Vyplňte prosím jméno");document.getElementById(ds.saveprofile+"-name").focus();return;}
     const firstTime=!S.profile;S.profile=p;save();
     if(firstTime){onboard.hidden=true;document.body.style.overflow="";try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){} location.hash="dnes";render();}
-    else{render();toast("Profil uložen");}}
+    else{profEdit=false;render();scrollTo(0,0);toast("Profil uložen");}}
+  else if("editprofile" in ds){profEdit=true;render();scrollTo(0,0);setTimeout(()=>{const n=document.getElementById("pf-name");if(n)n.focus();},50);}
+  else if("canceledit" in ds){profEdit=false;render();scrollTo(0,0);}
   else if(ds.scale){S.settings.scale=+ds.scale;save();applyScale();render();}
   else if(ds.export){({pdf:exportPDF,csv:exportCSV,json:exportJSON})[ds.export]();}
   else if("import" in ds)document.getElementById("importFile").click();
