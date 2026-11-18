@@ -2,118 +2,203 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Masérská kompenzace</title>
+<meta name="description" content="Kompenzační cvičení, pauzy mezi klienty a deník bolesti pro maséry.">
 <meta name="theme-color" content="#0f6b5c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kompenzace">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: one-column phone app, bottom tab bar, cards on a cool green-grey ground; widens to a 2-column grid on tablets. */
+/* Layout: one-column phone app; primary actions sit low on the screen within thumb reach; 5-tab bottom bar; 2 columns on tablets. */
 :root{
-  --bg:#eef2f0; --surface:#ffffff; --ink:#17241f; --muted:#586a62; --line:#d3ddd8;
-  --accent:#0f6b5c; --accent-ink:#ffffff; --accent-soft:#dcebe6; --warm:#b87508;
-  --c1:#0f6b5c; --c2:#b4532a; --c3:#3b5bb5;
+  --bg:#eef2f0; --surface:#ffffff; --ink:#17241f; --muted:#556860; --line:#d3ddd8;
+  --accent:#0f6b5c; --accent-ink:#ffffff; --accent-soft:#dcebe6; --warm:#a86a05; --warm-soft:#f6ead2;
+  --c1:#0f6b5c; --c2:#b4532a; --c3:#3b5bb5; --danger:#b3261e;
   --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0f1714; --surface:#18231f; --ink:#e6efea; --muted:#9db0a8; --line:#2b3b35;
-    --accent:#4fc3ad; --accent-ink:#0b1512; --accent-soft:#1f3731; --warm:#e7ad4a;
-    --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; color-scheme:dark;
+    --bg:#0f1714; --surface:#18231f; --ink:#e6efea; --muted:#a3b5ad; --line:#2b3b35;
+    --accent:#4fc3ad; --accent-ink:#0b1512; --accent-soft:#1f3731; --warm:#e7ad4a; --warm-soft:#3a2f1a;
+    --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; --danger:#f2867f; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0f1714; --surface:#18231f; --ink:#e6efea; --muted:#9db0a8; --line:#2b3b35;
-  --accent:#4fc3ad; --accent-ink:#0b1512; --accent-soft:#1f3731; --warm:#e7ad4a;
-  --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; color-scheme:dark;
+  --bg:#0f1714; --surface:#18231f; --ink:#e6efea; --muted:#a3b5ad; --line:#2b3b35;
+  --accent:#4fc3ad; --accent-ink:#0b1512; --accent-soft:#1f3731; --warm:#e7ad4a; --warm-soft:#3a2f1a;
+  --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; --danger:#f2867f; color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.5;-webkit-tap-highlight-color:transparent}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
-h1{font-size:1.7rem} h2{font-size:1.25rem} h3{font-size:1.05rem}
+h1{font-size:1.6rem} h2{font-size:1.25rem} h3{font-size:1.05rem}
 p{margin:0}
-.app{max-width:860px;margin:0 auto;padding:20px 16px 96px;display:flex;flex-direction:column;gap:18px}
-header.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.app{max-width:880px;margin:0 auto;padding:calc(16px + var(--safe-t)) 16px calc(104px + var(--safe-b));display:flex;flex-direction:column;gap:16px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+header.top .who{display:flex;flex-direction:column}
 .muted{color:var(--muted)} .small{font-size:.875rem}
-.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .card.hero{background:var(--accent);color:var(--accent-ink);border-color:transparent}
-.card.hero .muted{color:inherit;opacity:.85}
+.card.hero .muted{color:inherit;opacity:.88}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .spread{justify-content:space-between}
-button{font:inherit;cursor:pointer}
-.btn{border:0;border-radius:999px;padding:11px 18px;font-weight:600;background:var(--accent);color:var(--accent-ink);min-height:44px}
+.section-title{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.btn{border:0;border-radius:999px;padding:12px 20px;font-weight:600;background:var(--accent);color:var(--accent-ink);min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.block{width:100%}
+.btn svg{width:20px;height:20px;flex:none}
 .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.quiet{background:var(--accent-soft);color:var(--accent)}
+.btn.danger{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}
 .hero .btn{background:var(--accent-ink);color:var(--accent)}
-.btn:focus-visible,.tab:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
-.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:600;background:var(--accent-soft);color:var(--accent)}
-.pill.warm{background:transparent;border:1px solid var(--warm);color:var(--warm)}
-.dots{display:flex;gap:6px}
-.dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent)}
-.dot.on{background:var(--accent)}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5}
-nav.tabs .in{display:flex;width:100%;max-width:860px}
-.tab{flex:1;background:none;border:0;padding:10px 4px 12px;color:var(--muted);font-size:.78rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;border-top:3px solid transparent}
-.tab svg{width:22px;height:22px}
+.btn:disabled{opacity:.5}
+:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:600;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.pill.warm{background:var(--warm-soft);color:var(--warm)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.tile b{font-family:var(--display);font-size:1.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile span{font-size:.8rem;color:var(--muted)}
+.ring{display:flex;gap:6px}
+.ring i{flex:1;height:10px;border-radius:5px;background:var(--line)}
+.ring i.on{background:var(--accent)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5;padding-bottom:var(--safe-b)}
+nav.tabs .in{display:flex;width:100%;max-width:880px}
+.tab{flex:1;background:none;border:0;padding:8px 2px 10px;color:var(--muted);font-size:.75rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;border-top:3px solid transparent;min-height:60px}
+.tab svg{width:24px;height:24px}
 .tab[aria-current="page"]{color:var(--accent);border-top-color:var(--accent)}
-.ex{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
-.ex:first-of-type{border-top:0}
-.fig{width:96px;height:96px;background:var(--bg);border-radius:10px;color:var(--ink)}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:none;border-radius:999px;padding:10px 6px;font-weight:600;color:var(--muted);min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.rt{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:left;width:100%}
+.rt .fig{width:64px;height:64px}
+.rt .go{width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;border:0}
+.rt .go svg{width:22px;height:22px}
+.fig{background:var(--bg);border-radius:12px;color:var(--ink);flex:none}
 .fig svg{width:100%;height:100%;display:block}
-details summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.ex{display:grid;grid-template-columns:80px 1fr;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.ex .fig{width:80px;height:80px}
+details summary{cursor:pointer;font-weight:600;color:var(--accent);min-height:44px;display:flex;align-items:center}
 .sliders{display:flex;flex-direction:column;gap:14px}
 .sl label{display:flex;justify-content:space-between;font-weight:600}
-.sl output{font-variant-numeric:tabular-nums}
-input[type=range]{width:100%;accent-color:var(--accent);height:32px}
-textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;min-height:64px}
+.sl output{font-variant-numeric:tabular-nums;min-width:2ch;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent);height:36px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lbl{font-weight:600;font-size:.9rem}
+input[type=text],input[type=email],input[type=number],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:48px}
+textarea{min-height:72px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 14px;font-weight:600;min-height:44px}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem}
 .legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:6px}
 table{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}
-th,td{text-align:left;padding:6px 8px;border-top:1px solid var(--line)}
+th,td{text-align:left;padding:8px;border-top:1px solid var(--line);vertical-align:top}
 th{color:var(--muted);font-weight:600;border-top:0}
 td:first-child{white-space:nowrap}
 .scroll{overflow-x:auto}
 ul.tips{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
-.overlay{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;flex-direction:column;align-items:center;padding:20px 16px;gap:14px;overflow:auto}
-.overlay .box{width:100%;max-width:460px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
-.bigfig{width:200px;height:200px;background:var(--surface);border:1px solid var(--line);border-radius:16px;color:var(--ink)}
+.heat{display:grid;grid-template-columns:auto repeat(7,1fr);gap:4px;align-items:center;font-size:.72rem;color:var(--muted)}
+.heat .d{aspect-ratio:1;border-radius:6px;background:var(--line);display:grid;place-items:center;font-size:.7rem;color:var(--muted)}
+.heat .d.l1{background:var(--accent-soft);color:var(--accent)}
+.heat .d.l2{background:var(--accent);color:var(--accent-ink)}
+.heat .d.today{outline:2px solid var(--warm);outline-offset:1px}
+.heat .d.future{background:transparent;border:1px dashed var(--line)}
+.check{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.check:first-of-type{border-top:0}
+.check input{width:24px;height:24px;accent-color:var(--accent);margin-top:2px;flex:none}
+.note{border-left:4px solid var(--warm);padding:10px 12px;background:var(--surface);border-radius:0 12px 12px 0}
+.hist{display:flex;flex-direction:column}
+.hist div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.hist div:first-child{border-top:0}
+.toast{position:fixed;left:50%;bottom:calc(84px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:30;max-width:90vw;text-align:center}
+.overlay{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;flex-direction:column;overflow:auto;padding:calc(12px + var(--safe-t)) 16px calc(16px + var(--safe-b))}
+.overlay .box{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px;flex:1}
+.player-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.steps{display:flex;gap:4px;flex:1;margin:0 8px}
+.steps i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.steps i.done{background:var(--accent)} .steps i.cur{background:var(--warm)}
+.bigfig{width:min(40vw,170px);height:min(40vw,170px);margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;color:var(--ink)}
 .bigfig svg{width:100%;height:100%}
-.clock{font-family:var(--display);font-size:3.2rem;font-variant-numeric:tabular-nums;line-height:1}
+.clock{font-family:var(--display);font-size:3rem;font-variant-numeric:tabular-nums;line-height:1;text-align:center}
 .bar{width:100%;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--warm);width:0}
-.note{border-left:4px solid var(--warm);padding:8px 12px;background:var(--surface);border-radius:0 10px 10px 0}
+.controls{margin-top:auto;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0 4px;position:sticky;bottom:0;background:var(--bg)}
+.round{width:64px;height:64px;border-radius:50%;border:1.5px solid var(--accent);background:transparent;color:var(--accent);display:grid;place-items:center}
+.round svg{width:26px;height:26px}
+.controls .btn{min-height:64px;font-size:1.1rem;padding:12px 10px;min-width:0}
+@media (max-width:360px){.controls .round{width:56px;height:56px}.tiles{gap:6px}.tile{padding:10px}}
+.center{text-align:center}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center;padding:16px}
+.dlg .card{width:100%;max-width:460px;margin-bottom:var(--safe-b)}
+.feel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.feel button{min-height:64px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-weight:600}
+.feel button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+#report{display:none}
 [hidden]{display:none!important}
-@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s linear}}
+@media (min-width:700px){.tiles{grid-template-columns:repeat(3,1fr)}}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s linear}.btn,.chip,.tab{transition:background .15s,color .15s}}
+@media print{
+  @page{size:A4;margin:18mm}
+  body{background:#fff;color:#000}
+  .app,nav.tabs,.overlay,.toast,.dlg{display:none!important}
+  #report{display:block!important;font-family:var(--body);color:#000}
+  #report h1{font-size:20pt} #report h2{font-size:13pt;margin-top:14pt}
+  #report table{font-size:9.5pt} #report th,#report td{border-top:1px solid #bbb;padding:4pt}
+  #report .rp-tiles{display:flex;gap:10pt;margin-top:8pt}
+  #report .rp-tiles div{border:1px solid #bbb;border-radius:6pt;padding:6pt 10pt}
+  #report .rp-tiles b{font-size:16pt;display:block}
+  #report svg{max-width:130mm}
+  #report .foot{margin-top:16pt;font-size:8.5pt;color:#444;border-top:1px solid #bbb;padding-top:6pt}
+}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <h1>Masérská kompenzace</h1>
-    <span class="muted small" id="today"></span>
+    <div class="who"><h1 id="hello">Masérská kompenzace</h1><span class="muted small" id="today"></span></div>
   </header>
   <main id="view"></main>
 </div>
 <nav class="tabs" aria-label="Hlavní navigace"><div class="in" id="tabs"></div></nav>
 <div class="overlay" id="player" hidden></div>
+<div class="overlay" id="onboard" hidden></div>
+<div id="report" aria-hidden="true"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
 
 <script>
-/* ---------- data ---------- */
+"use strict";
+/* ================= O autorce (upravte zde) ================= */
+const AUTHOR = {
+  name: "Eliška Růžičková",
+  faculty: "Fakulta sportovních studií, Masarykova univerzita",
+  purpose: "Aplikace vznikla jako součást seminární práce o kompenzačním cvičení pro maséry (2026).",
+  email: "" // doplňte kontaktní e-mail, např. "jmeno@mail.muni.cz"
+};
+const VERSION = "2.0";
+
+/* ================= Cviky a sestavy ================= */
 const EX = {
   flex:{n:"Protažení ohybačů předloktí",how:"Předpažte s nataženým loktem, dlaň vzhůru. Druhou rukou jemně stáhněte prsty dolů a k sobě, až ucítíte tah na vnitřní straně předloktí.",dose:"20–30 s každá ruka",sides:true,d:{k:"arm",bend:-1}},
   ext:{n:"Protažení natahovačů předloktí",how:"Předpažte s nataženým loktem, dlaň dolů. Druhou rukou ohněte zápěstí dolů, prsty směřují k zemi. Tah cítíte na hřbetní straně předloktí.",dose:"20–30 s každá ruka",sides:true,d:{k:"arm",bend:1}},
   thumb:{n:"Protažení palce",how:"Druhou rukou uchopte palec u jeho základny a jemně ho odtáhněte od dlaně. Netlačte do bolesti, tah má být v bříšku palce.",dose:"15–20 s každá ruka",sides:true,d:{k:"hand",thumb:70,arrow:"thumb"}},
   glide:{n:"Klouzání šlach",how:"Střídejte plynule čtyři polohy: natažené prsty, háček (ohnuté jen koncové články), pěst, stříška (ohnuté jen v základních kloubech).",dose:"5–10 pomalých cyklů",d:{k:"hand",curl:.55}},
   band:{n:"Rozevírání prstů proti gumičce",how:"Nasaďte gumičku kolem konečků všech pěti prstů. Rozevřete prsty od sebe, krátce podržte a pomalu vraťte.",dose:"10–15 opakování, 2 série",sides:true,d:{k:"hand",spread:1.6,band:true,thumb:60}},
+  pinch:{n:"Posilování špetkového úchopu",how:"Mezi palec a ukazovák (pak prostředník, prsteník, malík) stiskněte molitanový míček nebo kolíček. Podržte 3 s a povolte. Palec držte v ose, nepropadá se.",dose:"8–10 stisků každým prstem",sides:true,d:{k:"hand",thumb:20,curl:.25}},
   wrist:{n:"Posilování zápěstí",how:"Předloktí položte na stůl, ruka přes okraj, v dlani lehká činka nebo láhev s vodou. Pomalu zvedejte a spouštějte zápěstí, nejdřív dlaní dolů, pak dlaní vzhůru.",dose:"10–15 opakování na každou stranu",sides:true,d:{k:"arm",bend:-.5,weight:true}},
   chin:{n:"Zásuvka brady",how:"Stůjte zpříma. Zasuňte bradu vodorovně dozadu, jako byste dělali dvojitou bradu. Temeno táhněte vzhůru, hlavu nezaklánějte.",dose:"10 opakování s výdrží 5 s",d:{k:"fig",p:"chin"}},
   trap:{n:"Protažení horního trapézu",how:"Ukloňte hlavu k rameni, protilehlé rameno tlačte dolů. Rukou na hlavě úklon jen jemně jistěte, netahejte.",dose:"20–30 s každá strana",sides:true,d:{k:"fig",p:"trap"}},
@@ -128,38 +213,71 @@ const EX = {
   back:{n:"Záklon ve stoje",how:"Postavte se zpříma, dlaně opřete o bedra. Pomalu se zakloňte, kolena zůstávají natažená, a vraťte se zpět. Vhodné po delším předklonu nad stolem.",dose:"5–10 opakování",d:{k:"fig",p:"back"}}
 };
 const R = {
-  ruce:{n:"Ruce, palec a předloktí",t:"sestava",steps:[["flex",40],["ext",40],["thumb",30],["glide",40],["band",50],["wrist",60]]},
-  ramena:{n:"Ramena a krk",t:"sestava",steps:[["chin",40],["trap",40],["pec",40],["angel",40],["row",50],["rot",50]]},
-  bedra:{n:"Bedra a střed těla",t:"sestava",steps:[["cat",40],["lunge",50],["bird",60],["bridge",50],["back",30]]},
-  pred:{n:"Rozcvičení před směnou",t:"den",steps:[["glide",40],["angel",40],["chin",30],["cat",40],["back",30]]},
-  po:{n:"Protažení po směně",t:"den",steps:[["flex",40],["ext",40],["thumb",30],["trap",40],["pec",40],["lunge",50]]},
-  sila:{n:"Posilování",t:"den",steps:[["band",50],["wrist",60],["row",60],["rot",60],["bird",60],["bridge",60]]},
-  p1:{n:"Pauza 1 minuta",t:"pauza",steps:[["flex",20],["ext",20],["chin",20]]},
-  p2:{n:"Pauza 2 minuty",t:"pauza",steps:[["flex",20],["ext",20],["chin",20],["trap",30],["back",30]]},
-  p3:{n:"Pauza 3 minuty",t:"pauza",steps:[["flex",20],["ext",20],["thumb",30],["chin",20],["trap",30],["pec",30],["back",30]]}
+  ruce:{n:"Ruce, palec a předloktí",cat:"oblast",area:"ruka",icon:"thumb",steps:[["flex",40],["ext",40],["thumb",30],["glide",40],["band",50],["pinch",50],["wrist",60]]},
+  ramena:{n:"Ramena a krk",cat:"oblast",area:"ramena",icon:"angel",steps:[["chin",40],["trap",40],["pec",40],["angel",40],["row",50],["rot",50]]},
+  bedra:{n:"Bedra a střed těla",cat:"oblast",area:"bedra",icon:"bird",steps:[["cat",40],["lunge",50],["bird",60],["bridge",50],["back",30]]},
+  pred:{n:"Rozcvičení před směnou",cat:"den",icon:"angel",steps:[["glide",40],["angel",40],["chin",30],["cat",40],["back",30]]},
+  po:{n:"Protažení po směně",cat:"den",icon:"pec",steps:[["flex",40],["ext",40],["thumb",30],["trap",40],["pec",40],["lunge",50]]},
+  sila:{n:"Posilování",cat:"den",strength:true,icon:"row",steps:[["band",50],["pinch",50],["wrist",60],["row",60],["rot",60],["bird",60],["bridge",60]]},
+  p1:{n:"Pauza 1 minuta",cat:"pauza",icon:"flex",steps:[["flex",20],["ext",20],["chin",20]]},
+  p2:{n:"Pauza 2 minuty",cat:"pauza",icon:"chin",steps:[["flex",20],["ext",20],["chin",20],["trap",30],["back",30]]},
+  p3:{n:"Pauza 3 minuty",cat:"pauza",icon:"trap",steps:[["flex",20],["ext",20],["thumb",30],["chin",20],["trap",30],["pec",30],["back",30]]}
 };
+const AREAS=[["ruka","Palec a zápěstí"],["ramena","Ramena a krk"],["bedra","Bedra"]];
 const TIPS = [
-  {h:"Výška stolu",src:"Jang et al., 2006",items:["Nastavte stůl tak, abyste při hlazení měli lokty mírně pokrčené a ramena volně dole. Jako výchozí bod poslouží výška kloubů prstů při volně spuštěné paži.","Nevhodná výška stolu zvyšuje riziko bolestí beder. Před každým klientem ji zkontrolujte, hlavně při střídání technik."]},
-  {h:"Postoj a práce tělem",src:"Albert et al., 2008",items:["Sílu berte z nohou a z přenosu váhy těla, ne z ramen a paží. Pracujte ve výpadu, čelem ke směru tahu.","Hlavu držte v prodloužení páteře. Dlouhé předklánění krku souvisí s bolestmi zad."]},
-  {h:"Šetřete palec",src:"Snodgrass et al., 2003",items:["Tlak palcem nahrazujte loktem, předloktím, pěstí nebo pomůckou, kdykoli to technika dovolí.","Když už palec použijete, podepřete ho ostatními prsty a držte klouby v ose, bez prolomení do záklonu.","Zápěstí držte v prodloužení předloktí, ne ohnuté do stran."]},
-  {h:"Rozvrh dne",src:"Jang et al., 2006; Blau et al., 2013",items:["Více než 4 hodiny přímé práce s klienty denně zvyšují riziko potíží prstů. Plánujte s tím.","Mezi klienty si nechte pár minut na pauzu a krátké cvičení.","Střídejte techniky a typy masáží, ať nezatěžujete stále stejné struktury."]}
+  {h:"Výška stolu",src:"Jang et al., 2006; Resnick, 2024",items:["Nastavte stůl tak, abyste při hlazení měli lokty mírně pokrčené a ramena volně dole. Jako výchozí bod poslouží výška kloubů prstů při volně spuštěné paži.","Nevhodná výška stolu souvisí s bolestí beder. Zkontrolujte ji před každým klientem, hlavně při střídání technik."]},
+  {h:"Postoj a práce tělem",src:"Resnick, 2024",items:["Pracujte ve střihovém postoji, sílu berte z nohou a z přenosu váhy těla.","Při dlouhých tazích udělejte krok místo naklonění nad klienta. Nesahejte přes klienta na vzdálenější stranu, obejděte stůl.","Hlavu držte v prodloužení páteře; masáž krku je nejrizikovější úkon."]},
+  {h:"Šetřete palec",src:"Snodgrass et al., 2003; Resnick, 2024",items:["Tlak palcem nahrazujte loktem, předloktím, pěstí nebo pomůckou, kdykoli to technika dovolí.","Když palec použijete, podepřete ho ukazovákem nebo spojte oba palce a držte klouby v ose.","Zápěstí držte v prodloužení předloktí, ne ohnuté do stran."]},
+  {h:"Rozvrh dne",src:"Jang et al., 2006; Blau et al., 2013",items:["Více než 4 hodiny přímé práce s klienty denně zvyšují riziko potíží prstů.","Mezi klienty si nechte pár minut na pauzu a krátké cvičení, po náročné masáži delší.","Střídejte techniky a typy masáží."]}
 ];
-const TABS = [["dnes","Dnes","M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"],["sestavy","Sestavy","M4 6h16M4 12h16M4 18h10"],["pauza","Pauza","M12 7v5l3 2M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18z"],["denik","Deník","M4 19V5M4 19h16M7 15l4-5 3 3 5-7"],["ergonomie","Ergonomie","M12 4a2 2 0 1 0 0 4a2 2 0 0 0 0-4zM6 10h12M12 10v5l-3 5M12 15l3 5"]];
+const CHECK=["Stůl je nastavený na mou výšku","Mám pohodlnou obuv a volné oblečení","Mám po ruce vodu","Mezi klienty mám naplánované pauzy","Mám připravené pomůcky na šetření palce"];
 
-/* ---------- storage ---------- */
-const KEY="kcm-v1"; let S={log:[],pain:[]};
-try{const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw));}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+/* ================= Data ================= */
+const KEY="mk-v2";
+const DEF={v:2,profile:null,log:[],pain:[],check:{},settings:{scale:1,sound:true,vibrate:true}};
+let S=load();
+function load(){
+  let s=null;
+  try{const raw=localStorage.getItem(KEY); if(raw) s=JSON.parse(raw);}catch(e){}
+  if(!s){ s=JSON.parse(JSON.stringify(DEF));
+    try{const old=JSON.parse(localStorage.getItem("kcm-v1")||"null"); if(old){s.log=(old.log||[]).map(l=>({d:l.d,r:l.r,min:mins(l.r)}));s.pain=old.pain||[];}}catch(e){} }
+  return normalize(s);
+}
+function normalize(s){
+  const o=Object.assign(JSON.parse(JSON.stringify(DEF)),s||{});
+  o.settings=Object.assign({},DEF.settings,o.settings||{});
+  o.log=Array.isArray(o.log)?o.log:[]; o.pain=Array.isArray(o.pain)?o.pain:[];
+  o.check=o.check&&typeof o.check==="object"?o.check:{};
+  return o;
+}
+let saveWarned=false;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){if(!saveWarned){saveWarned=true;toast("Data se nepodařilo uložit. Pravidelně je zálohujte v Profilu.");}}}
+
+/* ================= Pomocné ================= */
 const pad=n=>String(n).padStart(2,"0");
 const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);};
 const cz=s=>{const [y,m,d]=s.split("-");return (+d)+". "+(+m)+".";};
-const TODAY=iso(new Date());
-function weekStart(){const d=new Date();const k=(d.getDay()+6)%7;d.setDate(d.getDate()-k);return iso(d);}
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const mins=r=>Math.round(R[r].steps.reduce((a,s)=>a+s[1],0)/60*2)/2;
-const minTxt=r=>{const m=mins(r);return String(m).replace(".",",")+" min";};
+const czFull=s=>{const [y,m,d]=s.split("-");return (+d)+". "+(+m)+". "+y;};
+const TODAY=()=>iso(new Date());
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return iso(d);};
+function weekStart(s){const d=parse(s||TODAY());d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d);}
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function mins(r){return R[r]?Math.round(R[r].steps.reduce((a,s)=>a+s[1],0)/60*2)/2:0;}
+const num=v=>String(v).replace(".",",");
+const minTxt=r=>num(mins(r))+" min";
+const plural=(n,a,b,c)=>n===1?a:(n>=2&&n<=4?b:c);
+const firstName=()=>S.profile&&S.profile.name?S.profile.name.trim().split(/\s+/)[0]:"";
 
-/* ---------- drawings ---------- */
+/* ================= Statistiky ================= */
+const daysWith=()=>new Set(S.log.map(l=>l.d));
+function streak(){const set=daysWith();let d=TODAY();if(!set.has(d))d=addDays(d,-1);let n=0;while(set.has(d)){n++;d=addDays(d,-1);}return n;}
+function weekDays(){const ws=weekStart();return new Set(S.log.filter(l=>l.d>=ws).map(l=>l.d)).size;}
+function weekMinutes(){const ws=weekStart();return S.log.filter(l=>l.d>=ws).reduce((a,l)=>a+(l.min||0),0);}
+function strengthWeek(){const ws=weekStart();return new Set(S.log.filter(l=>l.d>=ws&&R[l.r]&&R[l.r].strength).map(l=>l.d)).size;}
+const todayCount=()=>S.log.filter(l=>l.d===TODAY()).length;
+
+/* ================= Kresby ================= */
 const POSE={
   chin:{h:[58,22],n:[58,33],p:[58,68],a1:[[56,50],[55,66]],a2:[[60,50],[61,66]],l1:[[55,88],[54,108]],l2:[[61,88],[62,108]],ar:[[82,22],[68,22]]},
   trap:{h:[69,24],n:[60,34],p:[60,68],a1:[[50,50],[48,66]],a2:[[80,24],[72,14]],l1:[[56,88],[54,108]],l2:[[64,88],[66,108]],ar:[[84,36],[84,22]]},
@@ -174,8 +292,7 @@ const POSE={
   back:{h:[48,24],n:[53,34],p:[62,68],a1:[[66,50],[61,62]],a2:[[66,50],[61,62]],l1:[[60,88],[58,108]],l2:[[64,88],[64,108]],ar:[[40,34],[30,40]]}
 };
 const L=(a,b,c="")=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" ${c}/>`;
-function arrow(a,b){const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),s=6;
-  const p=k=>[b[0]-s*Math.cos(ang+k),b[1]-s*Math.sin(ang+k)];
+function arrow(a,b){const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),s=6;const p=k=>[b[0]-s*Math.cos(ang+k),b[1]-s*Math.sin(ang+k)];
   return `<g stroke="var(--warm)" stroke-width="3">${L(a,b)}${L(p(.5),b)}${L(p(-.5),b)}</g>`;}
 function draw(d){
   let o=`<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">`;
@@ -188,7 +305,7 @@ function draw(d){
     for(const a of [q.a1,q.a2]) o+=`<polyline points="${q.n} ${a[0]} ${a[1]}"/>`;
     for(const l of [q.l1,q.l2]) o+=`<polyline points="${q.p} ${l[0]} ${l[1]}"/>`;
     if(q.ar) o+=arrow(q.ar[0],q.ar[1]);
-  } else if(d.k==="arm"){const w=[72,60],hand=[72+24*Math.cos(d.bend*1.0),60+26*Math.sin(d.bend*1.0)];
+  } else if(d.k==="arm"){const w=[72,60],hand=[72+24*Math.cos(d.bend),60+26*Math.sin(d.bend)];
     o+=L([14,60],w,'stroke-width="12"')+L(w,hand,'stroke-width="10"');
     if(d.weight){o+=`<rect x="${hand[0]-5}" y="${hand[1]-12}" width="10" height="24" rx="3" fill="var(--accent)" stroke="none"/>`+arrow([104,74],[104,46]);}
     else o+=arrow([hand[0]+14,60],[hand[0]+14,60+20*Math.sign(d.bend)]);
@@ -204,134 +321,327 @@ function draw(d){
   }
   return o+"</svg>";
 }
+const ICON={
+  play:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
+  prev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',
+  next:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+const TABS=[["dnes","Dnes","M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"],["cviceni","Cvičení","M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"],["pokrok","Pokrok","M4 19V5M4 19h16M7 15l4-5 3 3 5-7"],["ergonomie","Ergonomie","M12 4a2 2 0 1 0 0 4a2 2 0 0 0 0-4zM6 10h12M12 10v5l-3 5M12 15l3 5"],["profil","Profil","M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"]];
 
-/* ---------- views ---------- */
-const view=document.getElementById("view");
-function countToday(){return S.log.filter(l=>l.d===TODAY).length;}
-function silaWeek(){const ws=weekStart();return new Set(S.log.filter(l=>l.r==="sila"&&l.d>=ws).map(l=>l.d)).size;}
-function routineCard(id,extra=""){const r=R[id];
-  return `<div class="card"><div class="row spread"><h3>${r.n}</h3><span class="pill">${minTxt(id)}</span></div>
-  <p class="muted small">${r.steps.map(s=>EX[s[0]].n).join(" · ")}</p>${extra}
-  <div class="row"><button class="btn" data-run="${id}">Spustit</button></div></div>`;}
+/* ================= Komponenty ================= */
+function routineRow(id,sub){const r=R[id];
+  return `<button class="rt" data-run="${id}" aria-label="Spustit: ${esc(r.n)}, ${minTxt(id)}">
+    <span class="fig">${draw(EX[r.icon].d)}</span>
+    <span><h3>${esc(r.n)}</h3><span class="muted small">${sub||minTxt(id)+" · "+r.steps.length+" "+plural(r.steps.length,"cvik","cviky","cviků")}</span></span>
+    <span class="go">${ICON.play}</span></button>`;}
+function myAreas(){return (S.profile&&S.profile.areas&&S.profile.areas.length)?S.profile.areas:["ruka","ramena","bedra"];}
+function recommended(){const h=new Date().getHours();
+  if(h<10) return {id:"pred",why:"Ráno před prvním klientem"};
+  if(h>=17) return {id:"po",why:"Po poslední masáži"};
+  return {id:"p2",why:"Během směny, mezi klienty"};}
+
+/* ================= Obrazovky ================= */
 function vDnes(){
-  const h=new Date().getHours(); const rec=h<10?"pred":h<17?"p2":"po";
-  const why=h<10?"Ráno před prvním klientem":"".concat(h<17?"Během směny, mezi klienty":"Po poslední masáži");
-  const sw=silaWeek();
-  return `<div class="grid">
-  <div class="card hero"><span class="small muted">${why}</span><h2>${R[rec].n}</h2>
-    <p class="muted small">${minTxt(rec)} · ${R[rec].steps.length} cviků</p>
-    <div class="row"><button class="btn" data-run="${rec}">Začít cvičit</button></div></div>
-  <div class="card"><h3>Dnes odcvičeno</h3><p><span class="clock">${countToday()}</span> <span class="muted">${countToday()===1?"sestava":countToday()>=2&&countToday()<=4?"sestavy":"sestav"}</span></p>
-    <p class="muted small">Počítá se každá dokončená sestava i krátká pauza.</p></div>
-  <div class="card"><div class="row spread"><h3>Posilování tento týden</h3><span class="pill">${sw} ze 3</span></div>
-    <div class="dots" aria-hidden="true">${[0,1,2].map(i=>`<span class="dot ${i<sw?"on":""}"></span>`).join("")}</div>
-    <p class="muted small">Silový trénink třikrát týdně má nejlepší doložený účinek na prevenci potíží horních končetin.</p>
-    <div class="row"><button class="btn ghost" data-run="sila">Spustit posilování (${minTxt("sila")})</button></div></div>
+  const rec=recommended(), st=streak(), wd=weekDays(), goal=(S.profile&&S.profile.goal)||5, sw=strengthWeek();
+  const areaR=myAreas().map(a=>Object.keys(R).find(k=>R[k].area===a)).filter(Boolean);
+  return `<div class="card hero"><span class="small muted">${rec.why}</span><h2>${R[rec.id].n}</h2>
+    <p class="small muted">${minTxt(rec.id)} · ${R[rec.id].steps.length} ${plural(R[rec.id].steps.length,"cvik","cviky","cviků")}</p>
+    <button class="btn block" data-run="${rec.id}">${ICON.play}Začít cvičit</button></div>
+  <div class="tiles">
+    <div class="tile"><b>${todayCount()}</b><span>dnes ${plural(todayCount(),"sestava","sestavy","sestav")}</span></div>
+    <div class="tile"><b>${st}</b><span>${plural(st,"den","dny","dní")} v řadě</span></div>
+    <div class="tile"><b>${num(weekMinutes())}</b><span>minut tento týden</span></div>
   </div>
-  <h2 style="margin-top:22px">Rozvrh dne</h2>
-  <div class="grid" style="margin-top:12px">${routineCard("pred")}${routineCard("p2")}${routineCard("po")}</div>
-  <p class="note small" style="margin-top:18px">Aplikace je studijní prototyp k seminární práci a nenahrazuje vyšetření. Při ostré, noční nebo přetrvávající bolesti, brnění či otoku cvičení přerušte a poraďte se s lékařem nebo fyzioterapeutem.</p>`;}
-function vSestavy(){
-  return ["ruce","ramena","bedra"].map(id=>`<div class="card" style="margin-bottom:12px">
-    <div class="row spread"><h2>${R[id].n}</h2><span class="pill">${minTxt(id)}</span></div>
-    <div class="row"><button class="btn" data-run="${id}">Spustit sestavu</button></div>
-    <details><summary>Zobrazit ${R[id].steps.length} cviků</summary>
-    ${R[id].steps.map(s=>{const e=EX[s[0]];return `<div class="ex"><div class="fig">${draw(e.d)}</div><div><h3>${e.n}</h3><p class="small">${e.how}</p><p class="small"><span class="pill warm">${e.dose}</span></p></div></div>`;}).join("")}
-    </details></div>`).join("");}
-function vPauza(){
-  return `<p class="muted" style="margin-bottom:12px">Krátké cvičení, které stihnete při výměně prostěradla. Vyberte podle času do dalšího klienta.</p>
-  <div class="grid">${["p1","p2","p3"].map(id=>routineCard(id)).join("")}</div>
-  <div class="card" style="margin-top:12px"><h3>Hlídač pauzy</h3>
-    <p class="muted small">Spusťte na začátku masáže. Po uplynutí času zazní tón a nabídne se cvičení. Nechte aplikaci otevřenou.</p>
-    <div class="row">${[30,50,60,90].map(m=>`<button class="btn ghost" data-watch="${m}">${m} min</button>`).join("")}</div>
-    <p id="watch" class="clock" style="font-size:2rem" hidden></p>
-    <div class="row" id="watchstop" hidden><button class="btn ghost" data-watch="0">Zrušit</button></div></div>`;}
-const REG=[["ruka","Palec a zápěstí","--c1",""],["ramena","Ramena a krk","--c2","6 4"],["bedra","Bedra","--c3","2 4"]];
-function sample(){const out=[];const base=[[5,4,3],[5,5,3],[4,4,4],[4,3,3],[3,3,2],[3,2,2],[2,2,2]];
-  base.forEach((b,i)=>{const d=new Date();d.setDate(d.getDate()-(7-i));out.push({d:iso(d),ruka:b[0],ramena:b[1],bedra:b[2],note:""});});return out;}
-function chart(data){const W=320,H=170,l=26,r=8,t=10,b=24,n=data.length;
+  <div class="card"><div class="row spread"><h3>Týdenní cíl</h3><span class="pill">${wd} z ${goal} dní</span></div>
+    <div class="ring" aria-hidden="true">${Array.from({length:goal},(_,i)=>`<i class="${i<wd?"on":""}"></i>`).join("")}</div>
+    <div class="row spread"><span class="small muted">Posilování: ${sw} ze 3 dní</span><button class="btn quiet" data-run="sila">Posilovat (${minTxt("sila")})</button></div></div>
+  <div class="section-title"><h2>Váš plán</h2><span class="muted small">podle profilu</span></div>
+  <div class="stack">${areaR.map(id=>routineRow(id)).join("")}</div>
+  <div class="section-title"><h2>Rychlá pauza</h2></div>
+  <div class="stack">${routineRow("p1")}</div>
+  <p class="note small">Aplikace nenahrazuje vyšetření. Při ostré, noční nebo přetrvávající bolesti, brnění či otoku cvičení přerušte a poraďte se s lékařem nebo fyzioterapeutem.</p>`;}
+
+let exFilter="den";
+function vCviceni(){
+  const cats=[["den","Během dne"],["oblast","Podle oblasti"],["pauza","Pauzy"]];
+  const list=Object.keys(R).filter(k=>R[k].cat===exFilter);
+  let o=`<div class="seg" role="group" aria-label="Typ sestav">${cats.map(([k,n])=>`<button data-filter="${k}" aria-pressed="${k===exFilter}">${n}</button>`).join("")}</div>`;
+  if(exFilter==="pauza") o+=`<div class="card"><h3>Hlídač pauzy</h3><p class="small muted">Spusťte na začátku masáže. Po uplynutí času se ozve tón, telefon zavibruje a nabídne se krátké cvičení. Aplikaci nechte otevřenou.</p>
+    <div class="chips">${[30,50,60,90].map(m=>`<button class="chip" data-watch="${m}">${m} min</button>`).join("")}</div>
+    <div class="row spread" id="watchrow" hidden><span class="clock" style="font-size:2rem" id="watch"></span><button class="btn ghost" data-watch="0">Zrušit</button></div></div>`;
+  o+=`<div class="stack">${list.map(id=>`<div class="stack" style="gap:6px">${routineRow(id)}
+    <details style="padding:0 12px"><summary>Zobrazit cviky (${R[id].steps.length})</summary>
+    ${R[id].steps.map(s=>{const e=EX[s[0]];return `<div class="ex"><div class="fig">${draw(e.d)}</div><div class="stack" style="gap:4px"><h3>${e.n}</h3><p class="small">${e.how}</p><p><span class="pill warm">${e.dose}</span></p></div></div>`;}).join("")}
+    </details></div>`).join("")}</div>`;
+  return o;}
+
+function painChart(data){const W=320,H=170,l=26,r=8,t=10,b=24,n=data.length;
   const x=i=>n<2?(l+(W-l-r)/2):l+i*(W-l-r)/(n-1), y=v=>t+(10-v)*(H-t-b)/10;
   let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Vývoj bolesti v čase" style="width:100%;height:auto;max-width:560px">`;
-  [0,5,10].forEach(v=>{o+=`<line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${v}</text>`;});
+  [0,5,10].forEach(v=>{o+=`<line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line,#ccc)"/><text x="${l-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted,#555)">${v}</text>`;});
   REG.forEach(([k,,c,dash])=>{o+=`<polyline fill="none" stroke="var(${c})" stroke-width="2.5" stroke-dasharray="${dash}" stroke-linejoin="round" points="${data.map((e,i)=>x(i)+","+y(e[k])).join(" ")}"/>`;
     const e=data[n-1];o+=`<circle cx="${x(n-1)}" cy="${y(e[k])}" r="4" fill="var(${c})"/>`;});
-  o+=`<text x="${x(0)}" y="${H-6}" font-size="11" fill="var(--muted)">${cz(data[0].d)}</text>`;
-  if(n>1)o+=`<text x="${x(n-1)}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--muted)">${cz(data[n-1].d)}</text>`;
+  o+=`<text x="${x(0)}" y="${H-6}" font-size="11" fill="var(--muted,#555)">${cz(data[0].d)}</text>`;
+  if(n>1)o+=`<text x="${x(n-1)}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--muted,#555)">${cz(data[n-1].d)}</text>`;
   return o+"</svg>";}
-function vDenik(){
-  const real=S.pain.slice().sort((a,b)=>a.d<b.d?-1:1), isSample=!real.length, data=(isSample?sample():real).slice(-14);
-  const cur=real.find(e=>e.d===TODAY)||{ruka:0,ramena:0,bedra:0,note:""};
-  return `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-  <form class="card" id="painform"><h2>Dnešní záznam</h2><p class="muted small">0 = bez bolesti, 10 = nejhorší představitelná bolest.</p>
+const REG=[["ruka","Palec a zápěstí","--c1",""],["ramena","Ramena a krk","--c2","6 4"],["bedra","Bedra","--c3","2 4"]];
+function heatmap(){
+  const end=addDays(weekStart(),6), start=addDays(weekStart(),-21), cnt={};
+  S.log.forEach(l=>{cnt[l.d]=(cnt[l.d]||0)+1;});
+  let o=`<div class="heat" role="img" aria-label="Cvičení za poslední 4 týdny"><span></span>${["Po","Út","St","Čt","Pá","So","Ne"].map(d=>`<span class="center">${d}</span>`).join("")}`;
+  for(let w=0;w<4;w++){const ws=addDays(start,w*7);o+=`<span>${cz(ws)}</span>`;
+    for(let i=0;i<7;i++){const d=addDays(ws,i),c=cnt[d]||0,fut=d>TODAY();
+      o+=`<span class="d ${fut?"future":c>=2?"l2":c===1?"l1":""} ${d===TODAY()?"today":""}" title="${czFull(d)}: ${c}">${parse(d).getDate()}</span>`;}}
+  return o+"</div>";}
+function vPokrok(){
+  const real=S.pain.slice().sort((a,b)=>a.d<b.d?-1:1), data=real.slice(-14);
+  const cur=real.find(e=>e.d===TODAY())||{ruka:0,ramena:0,bedra:0,note:""};
+  const total=S.log.length, totalMin=S.log.reduce((a,l)=>a+(l.min||0),0);
+  const hist=S.log.slice().sort((a,b)=>(b.d+(b.t||""))<(a.d+(a.t||""))?-1:1).slice(0,8);
+  const feelTxt={b:"úleva",s:"beze změny",w:"hůř"};
+  return `<div class="tiles">
+    <div class="tile"><b>${streak()}</b><span>${plural(streak(),"den","dny","dní")} v řadě</span></div>
+    <div class="tile"><b>${total}</b><span>${plural(total,"sestava","sestavy","sestav")} celkem</span></div>
+    <div class="tile"><b>${num(totalMin)}</b><span>minut celkem</span></div></div>
+  <div class="card"><h2>Poslední 4 týdny</h2>${heatmap()}
+    <div class="legend"><span><i style="border-color:var(--accent-soft);border-top-width:8px"></i>1 sestava</span><span><i style="border-color:var(--accent);border-top-width:8px"></i>2 a více</span></div></div>
+  <form class="card" id="painform"><h2>Deník bolesti – dnes</h2><p class="muted small">0 = bez bolesti, 10 = nejhorší představitelná bolest.</p>
     <div class="sliders">${REG.map(([k,n])=>`<div class="sl"><label for="s-${k}">${n}<output id="o-${k}">${cur[k]}</output></label><input type="range" id="s-${k}" min="0" max="10" step="1" value="${cur[k]}"></div>`).join("")}</div>
-    <label for="note" class="small" style="font-weight:600">Poznámka (počet masáží, co bolest spustilo)</label>
-    <textarea id="note">${esc(cur.note||"")}</textarea>
-    <div class="row"><button class="btn" type="submit">Uložit záznam</button><span class="muted small" id="saved"></span></div></form>
-  <div class="card"><div class="row spread"><h2>Vývoj bolesti</h2>${isSample?'<span class="pill warm">Ukázková data</span>':""}</div>
-    ${chart(data)}
-    <div class="legend">${REG.map(([,n,c,dash])=>`<span><i style="border-color:var(${c});border-top-style:${dash?"dashed":"solid"}"></i>${n}</span>`).join("")}</div>
-    <p class="muted small">${isSample?"Po uložení prvního záznamu se zde zobrazí vaše hodnoty.":"Posledních "+data.length+" záznamů. Data zůstávají jen v tomto zařízení."}</p>
-    ${isSample?"":`<div class="scroll"><table><thead><tr><th>Datum</th><th>Palec</th><th>Ramena</th><th>Bedra</th><th>Poznámka</th></tr></thead><tbody>${data.slice().reverse().map(e=>`<tr><td>${cz(e.d)}</td><td>${e.ruka}</td><td>${e.ramena}</td><td>${e.bedra}</td><td>${esc(e.note||"")}</td></tr>`).join("")}</tbody></table></div>`}
-  </div></div>`;}
+    <div class="field"><label for="note">Poznámka (počet masáží, co bolest spustilo)</label><textarea id="note">${esc(cur.note||"")}</textarea></div>
+    <button class="btn block" type="submit">Uložit dnešní záznam</button></form>
+  <div class="card"><h2>Vývoj bolesti</h2>
+    ${data.length?painChart(data)+`<div class="legend">${REG.map(([,n,c,dash])=>`<span><i style="border-color:var(${c});border-top-style:${dash?"dashed":"solid"}"></i>${n}</span>`).join("")}</div>`:`<p class="muted small">Graf se zobrazí po prvním uloženém záznamu.</p>`}</div>
+  <div class="card"><h2>Historie cvičení</h2>${hist.length?`<div class="hist">${hist.map(l=>`<div><span>${R[l.r]?R[l.r].n:esc(l.r)}<br><span class="muted small">${czFull(l.d)}${l.t?" · "+l.t:""}${l.feel?" · "+feelTxt[l.feel]:""}</span></span><span class="pill">${num(l.min||0)} min</span></div>`).join("")}</div>`:`<p class="muted small">Zatím žádné cvičení. Začněte na kartě Dnes.</p>`}
+    <button class="btn ghost" data-go="profil" data-anchor="export">Exportovat pokrok</button></div>`;}
+
 function vErgo(){
-  return `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${TIPS.map(t=>`<div class="card"><h2>${t.h}</h2><ul class="tips">${t.items.map(i=>`<li>${i}</li>`).join("")}</ul><p class="muted small">Zdroj: ${t.src}</p></div>`).join("")}</div>`;}
-const VIEWS={dnes:vDnes,sestavy:vSestavy,pauza:vPauza,denik:vDenik,ergonomie:vErgo};
+  const t=TODAY(), done=S.check[t]||[];
+  return `<div class="card"><div class="row spread"><h2>Kontrola před směnou</h2><span class="pill">${done.length} z ${CHECK.length}</span></div>
+    ${CHECK.map((c,i)=>`<label class="check"><input type="checkbox" data-check="${i}" ${done.includes(i)?"checked":""}><span>${c}</span></label>`).join("")}</div>
+  <div class="grid">${TIPS.map(t=>`<div class="card"><h2>${t.h}</h2><ul class="tips">${t.items.map(i=>`<li>${i}</li>`).join("")}</ul><p class="muted small">Zdroj: ${t.src}</p></div>`).join("")}</div>`;}
+
+function vProfil(){
+  const p=S.profile||{}, s=S.settings;
+  return `<div class="card"><h2>Můj profil</h2>${profileForm(p,"pf")}<button class="btn block" data-saveprofile="pf">Uložit profil</button></div>
+  <div class="card"><h2>Nastavení</h2>
+    <div class="field"><span class="lbl">Velikost písma</span><div class="seg" role="group" aria-label="Velikost písma">${[[1,"Normální"],[1.12,"Větší"],[1.25,"Největší"]].map(([v,n])=>`<button data-scale="${v}" aria-pressed="${s.scale==v}">${n}</button>`).join("")}</div></div>
+    <label class="check"><input type="checkbox" data-set="sound" ${s.sound?"checked":""}><span>Zvukové signály při cvičení</span></label>
+    <label class="check"><input type="checkbox" data-set="vibrate" ${s.vibrate?"checked":""}><span>Vibrace při změně cviku (Android)</span></label></div>
+  <div class="card" id="export"><h2>Export a záloha</h2>
+    <p class="small muted">Data jsou uložená jen v tomto zařízení. Zálohu si stáhněte pravidelně, slouží i k přenosu do jiného telefonu.</p>
+    <button class="btn block" data-export="pdf">PDF přehled pokroku</button>
+    <button class="btn quiet block" data-export="csv">Tabulka pro Excel (CSV)</button>
+    <button class="btn quiet block" data-export="json">Stáhnout zálohu</button>
+    <button class="btn ghost block" data-import>Obnovit ze zálohy</button>
+    <button class="btn danger block" data-wipe>Smazat všechna data</button></div>
+  <div class="card"><h2>O aplikaci</h2>
+    <p><b>Autorka:</b> ${esc(AUTHOR.name)}<br>${esc(AUTHOR.faculty)}</p>
+    <p class="small">${esc(AUTHOR.purpose)}</p>
+    ${AUTHOR.email?`<p class="small">Kontakt: <a href="mailto:${esc(AUTHOR.email)}">${esc(AUTHOR.email)}</a></p>`:""}
+    <p class="small muted">Obsah vychází z odborné literatury o pracovních potížích masérů a o účinku cvičení na pracovišti (Jang et al., 2006; Sirbu et al., 2022; Resnick, 2024; Sundstrup et al., 2020).</p>
+    <p class="note small">Aplikace slouží k prevenci a nenahrazuje vyšetření lékařem nebo fyzioterapeutem. Při bolesti, která neustupuje, se poraďte s odborníkem.</p>
+    <p class="small muted">Verze ${VERSION}</p></div>`;}
+
+function profileForm(p,id){
+  const areas=p.areas||[];
+  return `<div class="stack" id="${id}">
+    <div class="field"><label for="${id}-name">Jméno</label><input type="text" id="${id}-name" autocomplete="given-name" value="${esc(p.name||"")}" placeholder="Např. Jana"></div>
+    <div class="row" style="flex-wrap:nowrap">
+      <div class="field" style="flex:1"><label for="${id}-years">Roky praxe</label><input type="number" inputmode="numeric" min="0" max="60" id="${id}-years" value="${p.years??""}"></div>
+      <div class="field" style="flex:1"><label for="${id}-hours">Hodin masáží týdně</label><input type="number" inputmode="numeric" min="0" max="80" id="${id}-hours" value="${p.hours??""}"></div></div>
+    <div class="field"><span class="lbl">Dominantní ruka</span><div class="seg" role="group" aria-label="Dominantní ruka">${[["P","Pravá"],["L","Levá"]].map(([v,n])=>`<button type="button" data-hand="${v}" data-form="${id}" aria-pressed="${(p.hand||"P")===v}">${n}</button>`).join("")}</div></div>
+    <div class="field"><span class="lbl">Co vás při práci zatěžuje nejvíc?</span><div class="chips">${AREAS.map(([v,n])=>`<button type="button" class="chip" data-area="${v}" data-form="${id}" aria-pressed="${areas.includes(v)}">${n}</button>`).join("")}</div></div>
+    <div class="field"><label for="${id}-goal">Cíl: kolik dní v týdnu chci cvičit</label><select id="${id}-goal">${[3,4,5,6,7].map(v=>`<option value="${v}" ${(p.goal||5)==v?"selected":""}>${v} ${plural(v,"den","dny","dní")}</option>`).join("")}</select></div>
+  </div>`;}
+function readProfile(id){
+  const g=s=>document.getElementById(id+"-"+s);
+  const hand=(document.querySelector(`[data-hand][data-form="${id}"][aria-pressed="true"]`)||{}).dataset||{};
+  const areas=[...document.querySelectorAll(`[data-area][data-form="${id}"][aria-pressed="true"]`)].map(b=>b.dataset.area);
+  const n=v=>v===""?null:Math.max(0,Math.round(+v));
+  return {name:g("name").value.trim(),years:n(g("years").value),hours:n(g("hours").value),hand:hand.hand||"P",areas,goal:+g("goal").value,created:(S.profile&&S.profile.created)||TODAY()};}
+
+/* ================= Navigace ================= */
+const VIEWS={dnes:vDnes,cviceni:vCviceni,pokrok:vPokrok,ergonomie:vErgo,profil:vProfil};
+const view=document.getElementById("view");
 function route(){const k=location.hash.slice(1);return VIEWS[k]?k:"dnes";}
-function render(){const k=route();view.innerHTML=VIEWS[k]();
+function render(){const k=route();
+  const fn=firstName(), h=new Date().getHours(), greet=h<10?"Dobré ráno":h<18?"Dobrý den":"Dobrý večer";
+  document.getElementById("hello").textContent=k==="dnes"&&fn?`${greet}, ${fn}`:({dnes:"Masérská kompenzace",cviceni:"Cvičení",pokrok:"Můj pokrok",ergonomie:"Ergonomie",profil:"Profil"})[k];
+  view.innerHTML=VIEWS[k]();
   document.querySelectorAll(".tab").forEach(t=>t.toggleAttribute("aria-current",false));
   const cur=document.querySelector(`.tab[data-go="${k}"]`); if(cur) cur.setAttribute("aria-current","page");
-  if(k==="pauza") paintWatch();}
+  if(k==="cviceni") paintWatch();}
 document.getElementById("tabs").innerHTML=TABS.map(([k,n,p])=>`<button class="tab" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${p}"/></svg>${n}</button>`).join("");
-document.getElementById("today").textContent=new Date().toLocaleDateString("cs-CZ",{weekday:"long",day:"numeric",month:"long"});
-addEventListener("hashchange",render);
+function setDate(){document.getElementById("today").textContent=new Date().toLocaleDateString("cs-CZ",{weekday:"long",day:"numeric",month:"long"});}
+addEventListener("hashchange",()=>{render();scrollTo(0,0);});
+function applyScale(){document.documentElement.style.fontSize=(16*(S.settings.scale||1))+"px";}
 
-/* ---------- sound ---------- */
+/* ================= Toast a dialog ================= */
+let toastT;
+function toast(msg){let t=document.querySelector(".toast");if(!t){t=document.createElement("div");t.className="toast";t.setAttribute("role","status");document.body.appendChild(t);}
+  t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true;},2600);}
+function ask(title,text,okLabel,danger){return new Promise(res=>{const d=document.createElement("div");d.className="dlg";
+  d.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-labelledby="dlg-t"><h2 id="dlg-t">${title}</h2><p>${text}</p><div class="row"><button class="btn ${danger?"danger":""}" data-ok>${okLabel}</button><button class="btn ghost" data-no>Zrušit</button></div></div>`;
+  document.body.appendChild(d);d.querySelector("[data-no]").focus();
+  d.addEventListener("click",e=>{if(e.target.closest("[data-ok]")){d.remove();res(true);}else if(e.target.closest("[data-no]")||e.target===d){d.remove();res(false);}});});}
+
+/* ================= Zvuk, vibrace, displej ================= */
 let AC=null;
 function initSound(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();}catch(e){}}
-function beep(f=660,ms=180){try{if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.15,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+ms/1000);o.start();o.stop(AC.currentTime+ms/1000);}catch(e){}}
+function beep(f=660,ms=180){if(!S.settings.sound)return;try{if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.15,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+ms/1000);o.start();o.stop(AC.currentTime+ms/1000);}catch(e){}}
+function buzz(p){if(S.settings.vibrate&&navigator.vibrate){try{navigator.vibrate(p);}catch(e){}}}
+let wake=null;
+async function keepAwake(on){try{if(on&&"wakeLock" in navigator&&!wake){wake=await navigator.wakeLock.request("screen");wake.addEventListener("release",()=>{wake=null;});}else if(!on&&wake){await wake.release();wake=null;}}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&P&&!P.done)keepAwake(true);});
 
-/* ---------- player ---------- */
+/* ================= Přehrávač ================= */
 const player=document.getElementById("player"); let P=null,timer=null;
-function start(id){initSound();P={id,i:0,left:R[id].steps[0][1],paused:false,last:Date.now(),half:false};player.hidden=false;paintPlayer();clearInterval(timer);timer=setInterval(tick,250);}
-function stop(){clearInterval(timer);P=null;player.hidden=true;render();}
+function start(id){initSound();P={id,i:0,left:R[id].steps[0][1],paused:false,last:Date.now(),half:false,feel:null};player.hidden=false;document.body.style.overflow="hidden";keepAwake(true);paintPlayer();clearInterval(timer);timer=setInterval(tick,250);}
+function stop(){clearInterval(timer);P=null;player.hidden=true;document.body.style.overflow="";keepAwake(false);render();}
 function tick(){if(!P||P.done)return;const now=Date.now();if(!P.paused)P.left-=(now-P.last)/1000;P.last=now;
   const [ex,sec]=R[P.id].steps[P.i];
-  if(EX[ex].sides&&!P.half&&P.left<=sec/2){P.half=true;beep(520);const s=document.getElementById("side");if(s)s.textContent="Vyměňte stranu";}
-  if(P.left<=0){next();return;}
+  if(EX[ex].sides&&!P.half&&P.left<=sec/2){P.half=true;beep(520);buzz(120);const s=document.getElementById("side");if(s){s.textContent="Vyměňte stranu";s.className="pill";}}
+  if(P.left<=0){go(1);return;}
   const c=document.getElementById("clock"),b=document.getElementById("pbar");
   if(c)c.textContent=Math.ceil(P.left)+" s"; if(b)b.style.width=(100*(1-P.left/sec))+"%";}
-function next(){const st=R[P.id].steps;if(P.i<st.length-1){P.i++;P.left=st[P.i][1];P.half=false;P.last=Date.now();beep(760);paintPlayer();}
-  else{P.done=true;clearInterval(timer);beep(880,400);S.log.push({d:TODAY,r:P.id});save();
-    player.innerHTML=`<div class="box" style="margin-top:12vh"><h2>Hotovo</h2><p>${R[P.id].n} je zapsaná do dnešního přehledu.</p><div class="row" style="justify-content:center"><button class="btn" data-stop>Zpět do aplikace</button><button class="btn ghost" data-diary>Zapsat bolest</button></div></div>`;}}
-function paintPlayer(){const st=R[P.id].steps,[ex,sec]=st[P.i],e=EX[ex];
-  player.innerHTML=`<div class="box"><div class="row spread" style="width:100%"><span class="muted small">${R[P.id].n} · cvik ${P.i+1} z ${st.length}</span><button class="btn ghost" data-stop style="padding:6px 14px;min-height:36px">Ukončit</button></div>
-  <div class="bigfig">${draw(e.d)}</div><h2>${e.n}</h2>
-  <div class="clock" id="clock" aria-live="off">${Math.ceil(P.left)} s</div><div class="bar"><i id="pbar"></i></div>
-  <p class="pill warm" id="side">${e.sides?"Začněte jednou stranou":e.dose}</p>
+function go(dir){const st=R[P.id].steps;const n=P.i+dir;
+  if(n<0)return;
+  if(n<st.length){P.i=n;P.left=st[n][1];P.half=false;P.last=Date.now();beep(760);buzz(60);paintPlayer();}
+  else finish();}
+function finish(){P.done=true;clearInterval(timer);keepAwake(false);beep(880,400);buzz([80,60,80]);
+  const now=new Date();const entry={d:iso(now),t:pad(now.getHours())+":"+pad(now.getMinutes()),r:P.id,min:mins(P.id)};S.log.push(entry);save();P.entry=entry;
+  const st=streak();
+  player.innerHTML=`<div class="box center" style="justify-content:center">
+    <h2>Hotovo${firstName()?", "+esc(firstName()):""}!</h2>
+    <p>${R[P.id].n} · ${minTxt(P.id)}</p>
+    <div class="tiles"><div class="tile"><b>${todayCount()}</b><span>dnes</span></div><div class="tile"><b>${st}</b><span>${plural(st,"den","dny","dní")} v řadě</span></div><div class="tile"><b>${weekDays()}</b><span>dní tento týden</span></div></div>
+    <div class="field"><span class="lbl">Jak se cítíte?</span><div class="feel">${[["b","Úleva"],["s","Beze změny"],["w","Hůř"]].map(([v,n])=>`<button data-feel="${v}" aria-pressed="false">${n}</button>`).join("")}</div></div>
+    <div class="stack" style="margin-top:auto"><button class="btn block" data-stop>Hotovo</button><button class="btn ghost block" data-diary>Zapsat bolest do deníku</button></div></div>`;}
+function paintPlayer(){const st=R[P.id].steps,[ex,sec]=st[P.i],e=EX[ex],nx=st[P.i+1];
+  player.innerHTML=`<div class="box">
+  <div class="player-top"><button class="round" style="width:48px;height:48px" data-stop aria-label="Ukončit cvičení">${ICON.close}</button>
+    <div class="steps" aria-hidden="true">${st.map((_,i)=>`<i class="${i<P.i?"done":i===P.i?"cur":""}"></i>`).join("")}</div>
+    <span class="small muted">${P.i+1}/${st.length}</span></div>
+  <div class="bigfig">${draw(e.d)}</div>
+  <h2 class="center">${e.n}</h2>
+  <div class="clock" id="clock">${Math.ceil(P.left)} s</div><div class="bar"><i id="pbar"></i></div>
+  <p class="center"><span class="pill warm" id="side">${e.sides?"Začněte jednou stranou":e.dose}</span></p>
   <p>${e.how}</p>
-  <div class="row" style="justify-content:center"><button class="btn ghost" data-pause>${P.paused?"Pokračovat":"Pozastavit"}</button><button class="btn" data-next>${P.i<st.length-1?"Další cvik":"Dokončit"}</button></div></div>`;}
+  ${nx?`<p class="small muted">Další: ${EX[nx[0]].n}</p>`:`<p class="small muted">Poslední cvik</p>`}
+  <div class="controls">
+    <button class="round" data-step="-1" aria-label="Předchozí cvik" ${P.i===0?"disabled style='opacity:.35'":""}>${ICON.prev}</button>
+    <button class="btn" data-pause>${P.paused?ICON.play+"Pokračovat":ICON.pause+"Pozastavit"}</button>
+    <button class="round" data-step="1" aria-label="${nx?"Další cvik":"Dokončit"}">${ICON.next}</button></div></div>`;}
 
-/* ---------- break watcher ---------- */
+/* ================= Hlídač pauzy ================= */
 let W=null,wt=null;
-function paintWatch(){const el=document.getElementById("watch"),st=document.getElementById("watchstop");if(!el)return;
-  el.hidden=st.hidden=!W; if(W){const s=Math.max(0,Math.round((W-Date.now())/1000));el.textContent=pad(Math.floor(s/60))+":"+pad(s%60);}}
-function watch(m){clearInterval(wt);if(!m){W=null;paintWatch();return;}initSound();W=Date.now()+m*60000;paintWatch();
-  wt=setInterval(()=>{if(Date.now()>=W){clearInterval(wt);W=null;beep(880,500);setTimeout(()=>beep(880,500),600);if(!P)start("p2");}else paintWatch();},1000);}
+function paintWatch(){const el=document.getElementById("watch"),row=document.getElementById("watchrow");if(!el)return;
+  row.hidden=!W; if(W){const s=Math.max(0,Math.round((W-Date.now())/1000));el.textContent=pad(Math.floor(s/60))+":"+pad(s%60);}}
+function watch(m){clearInterval(wt);if(!m){W=null;paintWatch();return;}initSound();W=Date.now()+m*60000;paintWatch();toast(`Hlídač pauzy: ${m} min`);
+  wt=setInterval(()=>{if(Date.now()>=W){clearInterval(wt);W=null;beep(880,500);setTimeout(()=>beep(880,500),600);buzz([200,100,200]);if(!P)start("p2");}else paintWatch();},1000);}
 
-/* ---------- events ---------- */
-document.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t)return;
-  if(t.dataset.go){location.hash=t.dataset.go;if(route()===t.dataset.go)render();scrollTo(0,0);}
-  else if(t.dataset.run)start(t.dataset.run);
-  else if("stop" in t.dataset)stop();
-  else if("diary" in t.dataset){stop();location.hash="denik";render();}
-  else if("pause" in t.dataset){P.paused=!P.paused;P.last=Date.now();t.textContent=P.paused?"Pokračovat":"Pozastavit";}
-  else if("next" in t.dataset)next();
-  else if(t.dataset.watch!==undefined)watch(+t.dataset.watch);});
+/* ================= Export ================= */
+function download(name,mime,content){
+  const blob=new Blob([content],{type:mime});
+  const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  try{const f=new File([blob],name,{type:mime});
+    if(mobile&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:name}).catch(()=>{});return;}}catch(e){}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);toast("Soubor "+name+" se stahuje");}
+const ascii=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"").toLowerCase();
+const fileBase=()=>"maserska-kompenzace"+(firstName()?"-"+ascii(firstName()):"")+"-"+TODAY();
+function dayRows(){
+  const days=new Set([...S.log.map(l=>l.d),...S.pain.map(p=>p.d)]);
+  return [...days].sort().map(d=>{const L=S.log.filter(l=>l.d===d),p=S.pain.find(x=>x.d===d)||{};
+    return {d,n:L.length,min:L.reduce((a,l)=>a+(l.min||0),0),names:L.map(l=>R[l.r]?R[l.r].n:l.r).join(", "),ruka:p.ruka,ramena:p.ramena,bedra:p.bedra,note:p.note||""};});}
+function exportCSV(){
+  const q=v=>{v=v==null?"":String(v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const head=["Datum","Počet sestav","Minuty","Sestavy","Bolest palec a zápěstí (0–10)","Bolest ramena a krk (0–10)","Bolest bedra (0–10)","Poznámka"];
+  const rows=dayRows().map(r=>[czFull(r.d),r.n,num(r.min),r.names,r.ruka??"",r.ramena??"",r.bedra??"",r.note]);
+  const csv="﻿"+[head,...rows].map(r=>r.map(q).join(";")).join("\r\n");
+  download(fileBase()+".csv","text/csv;charset=utf-8",csv);}
+function exportJSON(){download(fileBase()+"-zaloha.json","application/json",JSON.stringify(Object.assign({app:"maserska-kompenzace",exported:new Date().toISOString()},S),null,1));}
+function exportPDF(){
+  const p=S.profile||{}, rows=dayRows(), pain=S.pain.slice().sort((a,b)=>a.d<b.d?-1:1);
+  const first=rows.length?rows[0].d:TODAY(), total=S.log.length, totalMin=S.log.reduce((a,l)=>a+(l.min||0),0);
+  const byR={};S.log.forEach(l=>{byR[l.r]=(byR[l.r]||0)+1;});
+  const feel={b:0,s:0,w:0};S.log.forEach(l=>{if(l.feel)feel[l.feel]++;});
+  document.getElementById("report").innerHTML=`
+  <h1>Přehled pokroku – Masérská kompenzace</h1>
+  <p>${p.name?esc(p.name)+" · ":""}období ${czFull(first)} – ${czFull(TODAY())} · vytvořeno ${czFull(TODAY())}</p>
+  <p>${p.years!=null?"Praxe "+p.years+" "+plural(p.years,"rok","roky","let")+" · ":""}${p.hours!=null?p.hours+" h masáží týdně · ":""}dominantní ruka ${p.hand==="L"?"levá":"pravá"}${p.areas&&p.areas.length?" · zatížené oblasti: "+p.areas.map(a=>AREAS.find(x=>x[0]===a)[1]).join(", "):""}</p>
+  <div class="rp-tiles"><div><b>${total}</b>sestav</div><div><b>${num(totalMin)}</b>minut</div><div><b>${daysWith().size}</b>dní cvičení</div><div><b>${streak()}</b>dní v řadě</div></div>
+  <h2>Odcvičené sestavy</h2>
+  <table><thead><tr><th>Sestava</th><th>Počet</th></tr></thead><tbody>${Object.keys(byR).sort((a,b)=>byR[b]-byR[a]).map(k=>`<tr><td>${R[k]?R[k].n:esc(k)}</td><td>${byR[k]}</td></tr>`).join("")||"<tr><td colspan=2>Zatím žádné cvičení</td></tr>"}</tbody></table>
+  ${feel.b+feel.s+feel.w?`<p>Pocit po cvičení: úleva ${feel.b}×, beze změny ${feel.s}×, hůř ${feel.w}×.</p>`:""}
+  <h2>Vývoj bolesti (0–10)</h2>
+  ${pain.length?painChart(pain.slice(-30)).replace(/var\(--c1\)/g,"#0f6b5c").replace(/var\(--c2\)/g,"#b4532a").replace(/var\(--c3\)/g,"#3b5bb5")+`<p>Plná čára: palec a zápěstí · čárkovaná: ramena a krk · tečkovaná: bedra</p>`:"<p>Bez záznamů v deníku bolesti.</p>"}
+  <h2>Záznamy po dnech</h2>
+  <table><thead><tr><th>Datum</th><th>Sestavy</th><th>Min</th><th>Palec</th><th>Ramena</th><th>Bedra</th><th>Poznámka</th></tr></thead><tbody>
+  ${rows.slice(-60).reverse().map(r=>`<tr><td>${czFull(r.d)}</td><td>${r.n}</td><td>${num(r.min)}</td><td>${r.ruka??"–"}</td><td>${r.ramena??"–"}</td><td>${r.bedra??"–"}</td><td>${esc(r.note)}</td></tr>`).join("")||"<tr><td colspan=7>Žádné záznamy</td></tr>"}</tbody></table>
+  <p class="foot">Aplikace Masérská kompenzace · autorka ${esc(AUTHOR.name)}, ${esc(AUTHOR.faculty)}. Aplikace nenahrazuje vyšetření lékařem nebo fyzioterapeutem.</p>`;
+  const done=()=>{toast("V tisku zvolte „Uložit jako PDF“");};
+  try{window.print();done();}catch(e){toast("Tisk není v tomto prohlížeči dostupný");}}
+async function importJSON(file){
+  try{const txt=await file.text();const d=JSON.parse(txt);
+    if(!d||!Array.isArray(d.log)||!Array.isArray(d.pain))throw new Error("format");
+    const ok=await ask("Obnovit ze zálohy?",`Záloha obsahuje ${d.log.length} ${plural(d.log.length,"cvičení","cvičení","cvičení")} a ${d.pain.length} ${plural(d.pain.length,"záznam","záznamy","záznamů")} bolesti. Současná data v telefonu se nahradí.`,"Obnovit");
+    if(!ok)return; delete d.app; delete d.exported; S=normalize(d); save(); applyScale(); render(); toast("Data obnovena");
+  }catch(e){toast("Soubor nejde načíst. Vyberte zálohu z této aplikace (.json).");}}
+
+/* ================= Úvodní nastavení ================= */
+const onboard=document.getElementById("onboard");
+function showOnboard(){onboard.hidden=false;document.body.style.overflow="hidden";
+  onboard.innerHTML=`<div class="box">
+    <div class="stack" style="gap:6px"><span class="pill" style="align-self:flex-start">Vítejte</span><h1>Masérská kompenzace</h1>
+    <p class="muted">Krátká cvičení mezi klienty, deník bolesti a tipy k ergonomii. Řekněte nám o sobě pár věcí a aplikace vám připraví plán.</p></div>
+    ${profileForm({},"ob")}
+    <p class="small muted">Údaje zůstávají jen v tomto telefonu. Nikam se neodesílají.</p>
+    <div class="stack" style="margin-top:auto"><button class="btn block" data-saveprofile="ob">Začít</button>
+    <button class="btn ghost block" data-import>Mám zálohu – obnovit</button></div>
+    <p class="small muted center">Autorka: ${esc(AUTHOR.name)} · ${esc(AUTHOR.faculty)}</p></div>`;}
+
+/* ================= Události ================= */
+document.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t)return;const ds=t.dataset;
+  if(ds.go){const same=route()===ds.go;location.hash=ds.go;if(same)render();scrollTo(0,0);
+    if(ds.anchor)setTimeout(()=>{const a=document.getElementById(ds.anchor);if(a)a.scrollIntoView({block:"start"});},50);}
+  else if(ds.run)start(ds.run);
+  else if("stop" in ds)stop();
+  else if("diary" in ds){stop();location.hash="pokrok";setTimeout(()=>{const f=document.getElementById("painform");if(f)f.scrollIntoView({block:"start"});},50);}
+  else if("pause" in ds){P.paused=!P.paused;P.last=Date.now();t.innerHTML=P.paused?ICON.play+"Pokračovat":ICON.pause+"Pozastavit";}
+  else if(ds.step)go(+ds.step);
+  else if(ds.feel){document.querySelectorAll("[data-feel]").forEach(b=>b.setAttribute("aria-pressed",b===t));if(P&&P.entry){P.entry.feel=ds.feel;save();}}
+  else if(ds.watch!==undefined)watch(+ds.watch);
+  else if(ds.filter){exFilter=ds.filter;render();}
+  else if(ds.hand){document.querySelectorAll(`[data-hand][data-form="${ds.form}"]`).forEach(b=>b.setAttribute("aria-pressed",b===t));}
+  else if(ds.area){t.setAttribute("aria-pressed",t.getAttribute("aria-pressed")!=="true");}
+  else if(ds.saveprofile){const p=readProfile(ds.saveprofile);if(!p.name){toast("Vyplňte prosím jméno");document.getElementById(ds.saveprofile+"-name").focus();return;}
+    const firstTime=!S.profile;S.profile=p;save();
+    if(firstTime){onboard.hidden=true;document.body.style.overflow="";try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){} location.hash="dnes";render();}
+    else{render();toast("Profil uložen");}}
+  else if(ds.scale){S.settings.scale=+ds.scale;save();applyScale();render();}
+  else if(ds.export){({pdf:exportPDF,csv:exportCSV,json:exportJSON})[ds.export]();}
+  else if("import" in ds)document.getElementById("importFile").click();
+  else if("wipe" in ds){const ok=await ask("Smazat všechna data?","Smaže se profil, historie cvičení i deník bolesti. Nejde to vrátit. Pokud chcete data zachovat, nejdřív si stáhněte zálohu.","Smazat",true);
+    if(ok){S=normalize({});save();applyScale();location.hash="dnes";showOnboard();}}
+});
+document.getElementById("importFile").addEventListener("change",e=>{const f=e.target.files[0];e.target.value="";if(f){if(!onboard.hidden){onboard.hidden=true;document.body.style.overflow="";}importJSON(f).then(()=>{if(!S.profile)showOnboard();});}});
+document.addEventListener("change",e=>{const t=e.target;
+  if(t.dataset.check!==undefined){const d=TODAY(),i=+t.dataset.check;let a=S.check[d]||[];a=t.checked?[...new Set([...a,i])]:a.filter(x=>x!==i);S.check[d]=a;
+    Object.keys(S.check).forEach(k=>{if(k<addDays(d,-30))delete S.check[k];});save();render();}
+  if(t.dataset.set){S.settings[t.dataset.set]=t.checked;save();}});
 document.addEventListener("input",ev=>{const m=ev.target.id&&ev.target.id.match(/^s-(.+)$/);if(m)document.getElementById("o-"+m[1]).textContent=ev.target.value;});
 document.addEventListener("submit",ev=>{ev.preventDefault();if(ev.target.id!=="painform")return;
-  const e={d:TODAY,note:document.getElementById("note").value.trim()};REG.forEach(([k])=>e[k]=+document.getElementById("s-"+k).value);
-  S.pain=S.pain.filter(x=>x.d!==TODAY);S.pain.push(e);save();render();const s=document.getElementById("saved");if(s)s.textContent="Uloženo";});
-render();
+  const e={d:TODAY(),note:document.getElementById("note").value.trim()};REG.forEach(([k])=>e[k]=+document.getElementById("s-"+k).value);
+  S.pain=S.pain.filter(x=>x.d!==TODAY());S.pain.push(e);save();render();toast("Záznam uložen");});
+document.addEventListener("keydown",e=>{if(!P||player.hidden)return;if(e.key==="Escape")stop();else if(e.key===" "&&!P.done){e.preventDefault();const b=player.querySelector("[data-pause]");if(b)b.click();}});
+
+/* ================= Start ================= */
+applyScale();setDate();render();
+if(!S.profile)showOnboard();
+setInterval(setDate,60000);
 if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}
 </script>
 </body>
