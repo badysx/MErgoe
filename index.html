@@ -191,7 +191,7 @@ const AUTHOR = {
   purpose: "Aplikace vznikla jako součást seminární práce o kompenzačním cvičení pro maséry (2026).",
   email: "eruzickaa@seznam.cz"
 };
-const VERSION = "2.3";
+const VERSION = "2.4";
 
 /* ================= Cviky a sestavy ================= */
 const EX = {
@@ -536,7 +536,6 @@ function profileSummary(p){
   const areas=(p.areas||[]).map(a=>(AREAS.find(x=>x[0]===a)||[,a])[1]).join(", ")||"neuvedeno";
   return `<div class="hist">
     ${row("Jméno",esc(p.name||"–"))}
-    ${row("Oslovení",esc(callName()||"–"))}
     ${row("Praxe",p.years!=null?p.years+" "+plural(p.years,"rok","roky","let"):"neuvedeno")}
     ${row("Masáže týdně",p.hours!=null?p.hours+" "+plural(p.hours,"hodina","hodiny","hodin"):"neuvedeno")}
     ${row("Dominantní ruka",p.hand==="L"?"levá":"pravá")}
