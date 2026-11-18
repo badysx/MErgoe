@@ -20,6 +20,7 @@
   --bg:#eef2f0; --surface:#ffffff; --ink:#17241f; --muted:#556860; --line:#d3ddd8;
   --accent:#0f6b5c; --accent-ink:#ffffff; --accent-soft:#dcebe6; --warm:#a86a05; --warm-soft:#f6ead2;
   --c1:#0f6b5c; --c2:#b4532a; --c3:#3b5bb5; --danger:#b3261e;
+  --fig:#17241f; --fig2:#8fa39a; --prop:#d3ddd8;
   --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
@@ -29,13 +30,13 @@
   :root:not([data-theme="light"]){
     --bg:#0f1714; --surface:#18231f; --ink:#e6efea; --muted:#a3b5ad; --line:#2b3b35;
     --accent:#4fc3ad; --accent-ink:#0b1512; --accent-soft:#1f3731; --warm:#e7ad4a; --warm-soft:#3a2f1a;
-    --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; --danger:#f2867f; color-scheme:dark;
+    --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; --danger:#f2867f; --fig:#e6efea; --fig2:#71877e; --prop:#2b3b35; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0f1714; --surface:#18231f; --ink:#e6efea; --muted:#a3b5ad; --line:#2b3b35;
   --accent:#4fc3ad; --accent-ink:#0b1512; --accent-soft:#1f3731; --warm:#e7ad4a; --warm-soft:#3a2f1a;
-  --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; --danger:#f2867f; color-scheme:dark;
+  --c1:#4fc3ad; --c2:#e58a63; --c3:#8fa8f0; --danger:#f2867f; --fig:#e6efea; --fig2:#71877e; --prop:#2b3b35; color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -187,13 +188,13 @@ const AUTHOR = {
   name: "Eliška Růžičková",
   faculty: "Fakulta sportovních studií, Masarykova univerzita",
   purpose: "Aplikace vznikla jako součást seminární práce o kompenzačním cvičení pro maséry (2026).",
-  email: "" // doplňte kontaktní e-mail, např. "jmeno@mail.muni.cz"
+  email: "eruzickaa@seznam.cz"
 };
-const VERSION = "2.0";
+const VERSION = "2.1";
 
 /* ================= Cviky a sestavy ================= */
 const EX = {
-  flex:{n:"Protažení ohybačů předloktí",how:"Předpažte s nataženým loktem, dlaň vzhůru. Druhou rukou jemně stáhněte prsty dolů a k sobě, až ucítíte tah na vnitřní straně předloktí.",dose:"20–30 s každá ruka",sides:true,d:{k:"arm",bend:-1}},
+  flex:{n:"Protažení ohybačů předloktí",how:"Předpažte s nataženým loktem, dlaň otočte od sebe a prsty vzhůru. Druhou rukou jemně přitáhněte prsty k sobě, až ucítíte tah na vnitřní straně předloktí.",dose:"20–30 s každá ruka",sides:true,d:{k:"arm",bend:-1}},
   ext:{n:"Protažení natahovačů předloktí",how:"Předpažte s nataženým loktem, dlaň dolů. Druhou rukou ohněte zápěstí dolů, prsty směřují k zemi. Tah cítíte na hřbetní straně předloktí.",dose:"20–30 s každá ruka",sides:true,d:{k:"arm",bend:1}},
   thumb:{n:"Protažení palce",how:"Druhou rukou uchopte palec u jeho základny a jemně ho odtáhněte od dlaně. Netlačte do bolesti, tah má být v bříšku palce.",dose:"15–20 s každá ruka",sides:true,d:{k:"hand",thumb:70,arrow:"thumb"}},
   glide:{n:"Klouzání šlach",how:"Střídejte plynule čtyři polohy: natažené prsty, háček (ohnuté jen koncové články), pěst, stříška (ohnuté jen v základních kloubech).",dose:"5–10 pomalých cyklů",d:{k:"hand",curl:.55}},
@@ -278,49 +279,110 @@ function strengthWeek(){const ws=weekStart();return new Set(S.log.filter(l=>l.d>
 const todayCount=()=>S.log.filter(l=>l.d===TODAY()).length;
 
 /* ================= Kresby ================= */
-const POSE={
-  chin:{h:[58,22],n:[58,33],p:[58,68],a1:[[56,50],[55,66]],a2:[[60,50],[61,66]],l1:[[55,88],[54,108]],l2:[[61,88],[62,108]],ar:[[82,22],[68,22]]},
-  trap:{h:[69,24],n:[60,34],p:[60,68],a1:[[50,50],[48,66]],a2:[[80,24],[72,14]],l1:[[56,88],[54,108]],l2:[[64,88],[66,108]],ar:[[84,36],[84,22]]},
-  pec:{h:[56,22],n:[56,33],p:[54,68],a1:[[72,34],[76,16]],a2:[[52,50],[50,66]],l1:[[46,88],[38,108]],l2:[[62,86],[66,108]],wall:78,ar:[[40,46],[28,46]]},
-  row:{h:[52,22],n:[52,33],p:[52,68],a1:[[40,48],[58,44]],a2:[[42,50],[60,46]],l1:[[48,88],[46,108]],l2:[[56,88],[58,108]],band:[[60,45],[110,45]],ar:[[92,34],[74,34]]},
-  rot:{h:[60,22],n:[60,33],p:[60,68],a1:[[50,52],[34,52]],a2:[[70,52],[86,52]],l1:[[56,88],[54,108]],l2:[[64,88],[66,108]],band:[[34,52],[86,52]],ar:[[88,40],[100,40]]},
-  angel:{h:[60,22],n:[60,33],p:[60,68],a1:[[42,40],[38,20]],a2:[[78,40],[82,20]],l1:[[56,88],[54,108]],l2:[[64,88],[66,108]],ar:[[98,36],[98,16]]},
-  cat:{h:[26,82],n:[38,72],p:[82,72],sp:[60,50],a1:[[37,90],[36,108]],a2:[[39,90],[40,108]],l1:[[84,108],[106,108]],l2:[[86,108],[108,108]],ar:[[60,40],[60,28]]},
-  bird:{h:[27,64],n:[38,72],p:[82,72],a1:[[24,70],[8,68]],a2:[[39,90],[40,108]],l1:[[100,72],[116,70]],l2:[[84,108],[106,108]]},
-  bridge:{h:[14,100],n:[25,100],p:[60,78],a1:[[40,104],[56,106]],a2:[[40,104],[56,106]],l1:[[84,76],[88,108]],l2:[[86,78],[90,108]],ar:[[60,66],[60,52]]},
-  lunge:{h:[60,18],n:[60,29],p:[60,66],a1:[[68,48],[62,62]],a2:[[66,48],[60,62]],l1:[[84,70],[84,108]],l2:[[44,106],[20,106]],ar:[[70,80],[82,84]]},
-  back:{h:[48,24],n:[53,34],p:[62,68],a1:[[66,50],[61,62]],a2:[[66,50],[61,62]],l1:[[60,88],[58,108]],l2:[[64,88],[64,108]],ar:[[40,34],[30,40]]}
-};
-const L=(a,b,c="")=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" ${c}/>`;
-function arrow(a,b){const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),s=6;const p=k=>[b[0]-s*Math.cos(ang+k),b[1]-s*Math.sin(ang+k)];
-  return `<g stroke="var(--warm)" stroke-width="3">${L(a,b)}${L(p(.5),b)}${L(p(-.5),b)}</g>`;}
-function draw(d){
-  let o=`<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">`;
-  if(d.k==="fig"){const q=POSE[d.p];
-    o+=L([6,112],[114,112],'stroke-width="2" opacity=".35"');
-    if(q.wall) o+=L([q.wall,8],[q.wall,112],'stroke-width="5" opacity=".35"');
-    if(q.band) o+=L(q.band[0],q.band[1],'stroke="var(--accent)" stroke-width="3" stroke-dasharray="5 4"');
-    o+=`<circle cx="${q.h[0]}" cy="${q.h[1]}" r="8"/>`;
-    o+=q.sp?`<path d="M${q.n} Q${q.sp} ${q.p}"/>`:L(q.n,q.p);
-    for(const a of [q.a1,q.a2]) o+=`<polyline points="${q.n} ${a[0]} ${a[1]}"/>`;
-    for(const l of [q.l1,q.l2]) o+=`<polyline points="${q.p} ${l[0]} ${l[1]}"/>`;
-    if(q.ar) o+=arrow(q.ar[0],q.ar[1]);
-  } else if(d.k==="arm"){const w=[72,60],hand=[72+24*Math.cos(d.bend),60+26*Math.sin(d.bend)];
-    o+=L([14,60],w,'stroke-width="12"')+L(w,hand,'stroke-width="10"');
-    if(d.weight){o+=`<rect x="${hand[0]-5}" y="${hand[1]-12}" width="10" height="24" rx="3" fill="var(--accent)" stroke="none"/>`+arrow([104,74],[104,46]);}
-    else o+=arrow([hand[0]+14,60],[hand[0]+14,60+20*Math.sign(d.bend)]);
-  } else {const sp=d.spread||1,c=d.curl||0,len=34*(1-c);
-    o+=`<rect x="40" y="62" width="40" height="42" rx="10" stroke-width="4"/>`;
-    const tips=[];[-1.5,-.5,.5,1.5].forEach((i,k)=>{const a=(-90+i*9*sp)*Math.PI/180,b=[45+k*10,62],l=len*(k===0||k===3?.85:1),t=[b[0]+l*Math.cos(a),b[1]+l*Math.sin(a)];tips.push(t);o+=L(b,t,'stroke-width="7"');});
-    const ta=(180+(d.thumb||35))*Math.PI/180,tb=[41,90],tt=[tb[0]+26*Math.cos(ta-Math.PI/2),tb[1]+26*Math.sin(ta-Math.PI/2)];
-    o+=L(tb,tt,'stroke-width="8"');
-    if(d.band){const xs=tips.map(t=>t[0]).concat(tt[0]),ys=tips.map(t=>t[1]).concat(tt[1]);const x0=Math.min(...xs)-5,x1=Math.max(...xs)+5,y0=Math.min(...ys)-4,y1=Math.max(...ys)+4;
-      o+=`<ellipse cx="${(x0+x1)/2}" cy="${(y0+y1)/2}" rx="${(x1-x0)/2}" ry="${(y1-y0)/2}" stroke="var(--accent)" stroke-width="3" stroke-dasharray="5 4"/>`;}
-    if(d.arrow==="thumb") o+=arrow([tt[0]+2,tt[1]-12],[tt[0]-10,tt[1]-20]);
-    if(c) o+=arrow([98,40],[98,62]);
-  }
-  return o+"</svg>";
-}
+/* Ilustrace cviků – piktogramy s vyznačenou oblastí účinku. viewBox 200×200, podlaha y=180. */
+const ART=(()=>{
+  const C={near:"var(--fig)",far:"var(--fig2)",focus:"var(--warm)",prop:"var(--prop)",band:"var(--accent)"};
+  const pts=a=>a.map(p=>p.join(",")).join(" ");
+  const limb=(a,w,c)=>`<polyline points="${pts(a)}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const head=(p,r=14,c=C.near)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="${c}"/>`;
+  const focus=(x,y,r=16)=>`<!--F--><circle cx="${x}" cy="${y}" r="${r}" fill="${C.focus}" opacity=".45"/><circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${C.focus}" stroke-width="2" stroke-dasharray="3 4"/><!--/F-->`;
+  function arrow(d,head=[0,0,0]){ // d = path; head = [x,y,angleDeg]
+    const [x,y,a]=head, r=a*Math.PI/180, s=9;
+    const p1=[x-s*Math.cos(r-0.5),y-s*Math.sin(r-0.5)], p2=[x-s*Math.cos(r+0.5),y-s*Math.sin(r+0.5)];
+    return `<g fill="none" stroke="${C.focus}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/><polyline points="${pts([p1,[x,y],p2])}"/></g>`;}
+  const straight=(a,b)=>arrow(`M${a} L${b}`,[b[0],b[1],Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI]);
+  const floor=`<line x1="12" y1="183" x2="188" y2="183" stroke="${C.prop}" stroke-width="4" stroke-linecap="round"/>`;
+  const mat=`<rect x="10" y="180" width="180" height="8" rx="4" fill="${C.prop}"/>`;
+  const W={arm:12,leg:15,torso:23};
+  // side-view standing body
+  function body(o){let s="";
+    if(o.farArm) s+=limb(o.farArm,W.arm,C.far);
+    if(o.farLeg) s+=limb(o.farLeg,W.leg,C.far);
+    if(o.torsoPath) s+=`<path d="${o.torsoPath}" fill="none" stroke="${C.near}" stroke-width="${W.torso}" stroke-linecap="round"/>`;
+    else s+=limb(o.torso,o.tw||W.torso,C.near);
+    s+=head(o.head);
+    if(o.nearLeg) s+=limb(o.nearLeg,W.leg,C.near);
+    if(o.nearArm) s+=limb(o.nearArm,W.arm,C.near);
+    if(o.extra) s+=o.extra;
+    return s;}
+  // front-view body (both sides "near")
+  function front(o){let s="";
+    s+=limb([[92,112],o.lk||[89,146],o.la||[88,177],[(o.la||[88,177])[0]-10,179]],W.leg,C.near);
+    s+=limb([[108,112],o.rk||[111,146],o.ra||[112,177],[(o.ra||[112,177])[0]+10,179]],W.leg,C.near);
+    s+=`<path d="M86 66 Q100 58 114 66 L112 114 Q100 120 88 114 Z" fill="${C.near}" stroke="${C.near}" stroke-width="8" stroke-linejoin="round"/>`;
+    s+=limb([[86,66],...o.la2],W.arm,C.near)+limb([[114,66],...o.ra2],W.arm,C.near);
+    s+=limb([[100,58],o.neck||[100,52]],10,C.near)+head(o.head||[100,36]);
+    return s;}
+  // hand, top view; fingers up from palm
+  function hand(o){const cx=o.x||100, top=o.y||98, c=o.c||C.near; let s="";
+    const len=o.len||[30,38,36,28], sp=o.spread||0, curl=o.curl||0;
+    [-1.5,-.5,.5,1.5].forEach((k,i)=>{const bx=cx+k*11, ang=(-90+k*8*sp)*Math.PI/180, L=len[i]*(1-curl*.55);
+      const tip=[bx+L*Math.cos(ang),top+4+L*Math.sin(ang)];
+      if(curl>.3){const mid=[bx+L*.6*Math.cos(ang),top+4+L*.6*Math.sin(ang)];s+=limb([[bx,top+6],mid,[mid[0]+(k*1.5),mid[1]+L*.45]],10,c);}
+      else s+=limb([[bx,top+6],tip],10,c);});
+    s+=`<rect x="${cx-25}" y="${top}" width="50" height="50" rx="16" fill="${c}"/>`;
+    const ta=(o.thumb??35)*Math.PI/180, tb=[cx-20,top+38], tl=o.tl||28;
+    const tm=[tb[0]-tl*.55*Math.cos(ta),tb[1]-tl*.55*Math.sin(ta)], tt=[tm[0]-tl*.5*Math.cos(ta-.35),tm[1]-tl*.5*Math.sin(ta-.35)];
+    s+=limb([tb,tm,tt],12,c);
+    s+=limb([[cx,top+44],[cx,200]],30,c);
+    return {svg:s,tips:null,thumbTip:tt};}
+  // forearm side view, horizontal, with hand bent by angle (deg, + = down)
+  function arm(o){const y=o.y||96, wx=o.wx||120, a=(o.bend||0)*Math.PI/180, c=o.c||C.near;let s="";
+    s+=limb([[-10,y+6],[wx,y]],24,c);
+    const k=[wx+30*Math.cos(a),y+30*Math.sin(a)], tip=[k[0]+22*Math.cos(a+(o.fcurl||0)),k[1]+22*Math.sin(a+(o.fcurl||0))];
+    s+=limb([[wx,y],k],22,c)+limb([k,tip],13,c);
+    if(o.thumbUp) s+=limb([[wx+12,y-6],[wx+26,y-16]],10,c);
+    return {svg:s,knuckle:k,tip};}
+  const D={
+    chin:()=>floor+focus(95,52,15)+body({head:[106,36],torso:[[100,58],[100,112]],
+      farArm:[[99,66],[97,92],[99,116]],nearArm:[[101,66],[104,92],[107,116]],
+      farLeg:[[99,112],[97,146],[96,178],[107,180]],nearLeg:[[101,112],[104,146],[103,178],[115,180]]})
+      +`<circle cx="118" cy="36" r="14" fill="none" stroke="${C.far}" stroke-width="2.5" stroke-dasharray="4 4"/>`+straight([146,30],[126,30]),
+    trap:()=>floor+focus(86,60,15)+front({head:[115,38],neck:[106,50],la2:[[80,92],[82,116]],ra2:[[136,46],[124,26]]})
+      +straight([66,72],[66,98])+arrow("M136 18 Q150 30 146 46",[146,46,100]),
+    pec:()=>`<rect x="58" y="14" width="12" height="170" rx="3" fill="${C.prop}"/>`+floor+focus(110,74,15)+body({head:[110,38],torso:[[104,58],[100,112]],
+      farArm:[[104,66],[108,92],[110,114]],nearArm:[[102,66],[72,66],[72,36]],
+      farLeg:[[99,112],[88,146],[80,178],[91,180]],nearLeg:[[101,112],[116,146],[122,178],[134,180]]})+straight([132,96],[156,96]),
+    row:()=>`<rect x="182" y="70" width="8" height="28" rx="3" fill="${C.prop}"/>`+floor+focus(90,74,15)+body({head:[104,36],torso:[[100,58],[100,112]],
+      farArm:[[99,66],[84,90],[106,86]],nearArm:[[101,66],[86,92],[110,88]],
+      farLeg:[[99,112],[96,146],[96,178],[107,180]],nearLeg:[[101,112],[106,146],[104,178],[116,180]],
+      extra:`<line x1="110" y1="88" x2="184" y2="84" stroke="${C.band}" stroke-width="4" stroke-dasharray="7 5" stroke-linecap="round"/>`})+straight([150,70],[124,70]),
+    rot:()=>floor+focus(85,70,13)+focus(115,70,13)+front({la2:[[84,94],[58,92]],ra2:[[116,94],[142,92]]})
+      +`<line x1="58" y1="92" x2="142" y2="92" stroke="${C.band}" stroke-width="4" stroke-dasharray="7 5" stroke-linecap="round"/>`
+      +straight([48,76],[30,76])+straight([152,76],[170,76]),
+    angel:()=>`<rect x="40" y="10" width="120" height="174" rx="8" fill="${C.prop}" opacity=".45"/>`+floor+focus(100,80,15)
+      +front({la2:[[64,60],[62,30]],ra2:[[136,60],[138,30]]})+straight([46,44],[46,18])+straight([154,44],[154,18]),
+    cat:()=>mat+focus(108,74,16)+body({head:[160,112],torsoPath:"M144 104 Q108 58 72 104",
+      farArm:[[142,106],[146,142],[146,176]],nearArm:[[146,106],[150,142],[152,176]],
+      farLeg:[[70,104],[66,176],[34,178]],nearLeg:[[74,104],[72,176],[40,178]]})+straight([108,44],[108,24]),
+    bird:()=>mat+focus(106,104,16)+body({head:[162,92],torso:[[144,100],[72,102]],
+      farArm:[[142,104],[142,142],[142,176]],nearArm:[[146,100],[172,92],[196,88]],
+      farLeg:[[70,104],[40,100],[8,96]],nearLeg:[[74,104],[74,176],[42,178]]}),
+    bridge:()=>mat+focus(106,138,16)+body({head:[24,166],torso:[[44,168],[106,136]],
+      farArm:[[46,170],[72,175],[98,176]],nearArm:[[48,172],[74,176],[100,177]],
+      farLeg:[[104,136],[146,118],[146,176],[158,178]],nearLeg:[[108,138],[150,122],[152,176],[164,178]]})+straight([118,112],[118,88]),
+    lunge:()=>mat+focus(90,126,15)+body({head:[100,36],torso:[[98,58],[96,116]],
+      farArm:[[98,66],[110,90],[122,112]],nearArm:[[100,66],[112,92],[126,114]],
+      farLeg:[[94,116],[80,176],[46,177]],nearLeg:[[98,116],[132,118],[134,177],[146,178]]})+straight([52,116],[74,116]),
+    back:()=>floor+focus(94,100,15)+body({head:[80,40],torso:[[88,60],[102,112]],
+      farArm:[[88,66],[72,88],[94,104]],nearArm:[[90,66],[76,92],[98,106]],
+      farLeg:[[100,112],[102,146],[100,178],[111,180]],nearLeg:[[104,112],[106,146],[105,178],[117,180]]})+arrow("M112 30 Q96 14 76 18",[76,18,190]),
+    flex:()=>{const a=arm({bend:-70,fcurl:-.3});const h2=limb([[a.tip[0]+30,a.tip[1]-8],[a.tip[0]+8,a.tip[1]+2]],14,C.far);
+      return focus(60,98,16)+a.svg+limb([[200,120],[a.tip[0]+30,a.tip[1]-8]],22,C.far)+h2+straight([178,34],[150,34]);},
+    ext:()=>{const a=arm({bend:70,fcurl:.3});
+      return focus(60,90,16)+a.svg+limb([[200,70],[a.knuckle[0]+20,a.knuckle[1]-6],[a.knuckle[0]+4,a.knuckle[1]+4]],16,C.far)+arrow("M184 120 Q184 146 160 156",[160,156,160]);},
+    wrist:()=>`<rect x="-4" y="108" width="128" height="80" rx="6" fill="${C.prop}"/><rect x="150" y="90" width="18" height="44" rx="5" fill="${C.band}"/>`+focus(70,100,16)+arm({y:96,wx:118,bend:20}).svg+straight([178,138],[178,96])+straight([186,96],[186,138]),
+    thumb:()=>{const h=hand({thumb:70,tl:30});return focus(70,124,14)+h.svg+limb([[10,40],[48,82],[h.thumbTip[0]-2,h.thumbTip[1]-6]],18,C.far)+straight([60,74],[40,58]);},
+    glide:()=>focus(100,106,16)+hand({curl:.75})+`<g fill="none" stroke="${C.focus}" stroke-width="4.5" stroke-linecap="round"><path d="M150 60 A28 28 0 1 1 150 110"/></g>`+straight([150,104],[150,112]),
+    band:()=>{const s=hand({spread:1.8,thumb:20}).svg;return focus(100,74,18)+s+`<ellipse cx="100" cy="66" rx="52" ry="20" fill="none" stroke="${C.band}" stroke-width="4" stroke-dasharray="7 5"/>`+straight([56,40],[36,34])+straight([144,40],[164,34]);},
+    pinch:()=>{const s=hand({curl:.45,thumb:-10,tl:30}).svg;return focus(80,92,16)+s+`<circle cx="80" cy="80" r="13" fill="${C.band}"/>`+straight([44,66],[62,76]);}
+  };
+  // fix: hand() returns object; normalize
+  D.glide=()=>{const h=hand({curl:.75});return focus(100,106,16)+h.svg+`<g fill="none" stroke="${C.focus}" stroke-width="4.5" stroke-linecap="round"><path d="M150 60 A28 28 0 1 1 150 110"/></g>`+arrow("M150 104 L150 112",[150,112,90]);};
+  return key=>{let x=D[key]?D[key]():"";const f=[];x=x.replace(/<!--F-->([\s\S]*?)<!--\/F-->/g,(m,g)=>{f.push(g);return "";});
+    return `<svg viewBox="0 0 200 200" aria-hidden="true">${x}${f.join("")}</svg>`;};
+})();
+
 const ICON={
   play:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
   pause:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
@@ -333,7 +395,7 @@ const TABS=[["dnes","Dnes","M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-
 /* ================= Komponenty ================= */
 function routineRow(id,sub){const r=R[id];
   return `<button class="rt" data-run="${id}" aria-label="Spustit: ${esc(r.n)}, ${minTxt(id)}">
-    <span class="fig">${draw(EX[r.icon].d)}</span>
+    <span class="fig">${ART(r.icon)}</span>
     <span><h3>${esc(r.n)}</h3><span class="muted small">${sub||minTxt(id)+" · "+r.steps.length+" "+plural(r.steps.length,"cvik","cviky","cviků")}</span></span>
     <span class="go">${ICON.play}</span></button>`;}
 function myAreas(){return (S.profile&&S.profile.areas&&S.profile.areas.length)?S.profile.areas:["ruka","ramena","bedra"];}
@@ -373,7 +435,7 @@ function vCviceni(){
     <div class="row spread" id="watchrow" hidden><span class="clock" style="font-size:2rem" id="watch"></span><button class="btn ghost" data-watch="0">Zrušit</button></div></div>`;
   o+=`<div class="stack">${list.map(id=>`<div class="stack" style="gap:6px">${routineRow(id)}
     <details style="padding:0 12px"><summary>Zobrazit cviky (${R[id].steps.length})</summary>
-    ${R[id].steps.map(s=>{const e=EX[s[0]];return `<div class="ex"><div class="fig">${draw(e.d)}</div><div class="stack" style="gap:4px"><h3>${e.n}</h3><p class="small">${e.how}</p><p><span class="pill warm">${e.dose}</span></p></div></div>`;}).join("")}
+    ${R[id].steps.map(s=>{const e=EX[s[0]];return `<div class="ex"><div class="fig">${ART(s[0])}</div><div class="stack" style="gap:4px"><h3>${e.n}</h3><p class="small">${e.how}</p><p><span class="pill warm">${e.dose}</span></p></div></div>`;}).join("")}
     </details></div>`).join("")}</div>`;
   return o;}
 
@@ -524,7 +586,7 @@ function paintPlayer(){const st=R[P.id].steps,[ex,sec]=st[P.i],e=EX[ex],nx=st[P.
   <div class="player-top"><button class="round" style="width:48px;height:48px" data-stop aria-label="Ukončit cvičení">${ICON.close}</button>
     <div class="steps" aria-hidden="true">${st.map((_,i)=>`<i class="${i<P.i?"done":i===P.i?"cur":""}"></i>`).join("")}</div>
     <span class="small muted">${P.i+1}/${st.length}</span></div>
-  <div class="bigfig">${draw(e.d)}</div>
+  <div class="bigfig">${ART(ex)}</div>
   <h2 class="center">${e.n}</h2>
   <div class="clock" id="clock">${Math.ceil(P.left)} s</div><div class="bar"><i id="pbar"></i></div>
   <p class="center"><span class="pill warm" id="side">${e.sides?"Začněte jednou stranou":e.dose}</span></p>
