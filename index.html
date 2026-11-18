@@ -190,7 +190,7 @@ const AUTHOR = {
   purpose: "Aplikace vznikla jako součást seminární práce o kompenzačním cvičení pro maséry (2026).",
   email: "eruzickaa@seznam.cz"
 };
-const VERSION = "2.1";
+const VERSION = "2.2";
 
 /* ================= Cviky a sestavy ================= */
 const EX = {
@@ -269,6 +269,26 @@ const num=v=>String(v).replace(".",",");
 const minTxt=r=>num(mins(r))+" min";
 const plural=(n,a,b,c)=>n===1?a:(n>=2&&n<=4?b:c);
 const firstName=()=>S.profile&&S.profile.name?S.profile.name.trim().split(/\s+/)[0]:"";
+/* Oslovení v 5. pádě (Jana → Jano, Petr → Petře); uživatel ho může v profilu upravit */
+const FEM_CONS=new Set(["dagmar","ester","karin","miriam","ingrid","carmen","ruth","edit","judit","nikol","ivet","margit","rachel","isabel","beatrix","doris","agnes","iris","lili","ellen","helen","kim","dolores","mercedes","inez","ines","elizabet","ingeborg","gertrud","sigrid","astrid","yvonne","noemi","abigail","jasmin","kristin"]);
+function vocative(n){
+  const w=String(n||"").trim(); if(!w) return "";
+  const low=w.toLowerCase();
+  if(FEM_CONS.has(low)) return w;
+  if(/[eěiíyýoóuúů]$/.test(low)) return w;               // Marie, Jiří, Hugo
+  if(/a$/.test(low)) return w.slice(0,-1)+"o";              // Jana → Jano, Honza → Honzo
+  if(["pavel","karel","havel"].includes(low)) return w.slice(0,-2)+"le";
+  if(/něk$/.test(low)) return w.slice(0,-3)+"ňku";          // Zdeněk → Zdeňku
+  if(/děk$/.test(low)) return w.slice(0,-3)+"ďku";          // Luděk → Luďku
+  if(/těk$/.test(low)) return w.slice(0,-3)+"ťku";
+  if(/[^aeiouyáéíóúůý]ek$/.test(low)) return w.slice(0,-2)+"ku"; // Marek → Marku
+  if(/el$/.test(low)) return w+"i";                         // Daniel → Danieli
+  if(/[^aeiouyáéíóúůý]r$/.test(low)) return w.slice(0,-1)+"ře"; // Petr → Petře
+  if(/(k|h|g)$/.test(low)) return w+"u";                    // Dominik → Dominiku, Jindřich → Jindřichu
+  if(/[šžčřjcťďňsxz]$/.test(low)) return w+"i";             // Tomáš → Tomáši, Ondřej → Ondřeji
+  return w+"e";                                             // Jan → Jane, Michal → Michale
+}
+const callName=()=>S.profile?(S.profile.call||vocative(firstName())):"";
 
 /* ================= Statistiky ================= */
 const daysWith=()=>new Set(S.log.map(l=>l.d));
@@ -509,7 +529,8 @@ function vProfil(){
 function profileForm(p,id){
   const areas=p.areas||[];
   return `<div class="stack" id="${id}">
-    <div class="field"><label for="${id}-name">Jméno</label><input type="text" id="${id}-name" autocomplete="given-name" value="${esc(p.name||"")}" placeholder="Např. Jana"></div>
+    <div class="field"><label for="${id}-name">Jméno</label><input type="text" id="${id}-name" autocomplete="given-name" value="${esc(p.name||"")}" placeholder="Např. Jana" data-namefor="${id}"></div>
+    <div class="field"><label for="${id}-call">Jak vás má aplikace oslovovat?</label><input type="text" id="${id}-call" value="${esc(p.call||vocative((p.name||"").trim().split(/\s+/)[0]))}" placeholder="Např. Jano" data-touched="${p.call?"1":""}"><span class="small muted">Doplní se samo, opravit ho můžete.</span></div>
     <div class="row" style="flex-wrap:nowrap">
       <div class="field" style="flex:1"><label for="${id}-years">Roky praxe</label><input type="number" inputmode="numeric" min="0" max="60" id="${id}-years" value="${p.years??""}"></div>
       <div class="field" style="flex:1"><label for="${id}-hours">Hodin masáží týdně</label><input type="number" inputmode="numeric" min="0" max="80" id="${id}-hours" value="${p.hours??""}"></div></div>
@@ -522,14 +543,15 @@ function readProfile(id){
   const hand=(document.querySelector(`[data-hand][data-form="${id}"][aria-pressed="true"]`)||{}).dataset||{};
   const areas=[...document.querySelectorAll(`[data-area][data-form="${id}"][aria-pressed="true"]`)].map(b=>b.dataset.area);
   const n=v=>v===""?null:Math.max(0,Math.round(+v));
-  return {name:g("name").value.trim(),years:n(g("years").value),hours:n(g("hours").value),hand:hand.hand||"P",areas,goal:+g("goal").value,created:(S.profile&&S.profile.created)||TODAY()};}
+  const callIn=g("call").value.trim(), fn0=g("name").value.trim().split(/\s+/)[0]||"";
+  return {name:g("name").value.trim(),call:callIn&&callIn!==vocative(fn0)?callIn:"",years:n(g("years").value),hours:n(g("hours").value),hand:hand.hand||"P",areas,goal:+g("goal").value,created:(S.profile&&S.profile.created)||TODAY()};}
 
 /* ================= Navigace ================= */
 const VIEWS={dnes:vDnes,cviceni:vCviceni,pokrok:vPokrok,ergonomie:vErgo,profil:vProfil};
 const view=document.getElementById("view");
 function route(){const k=location.hash.slice(1);return VIEWS[k]?k:"dnes";}
 function render(){const k=route();
-  const fn=firstName(), h=new Date().getHours(), greet=h<10?"Dobré ráno":h<18?"Dobrý den":"Dobrý večer";
+  const fn=callName(), h=new Date().getHours(), greet=h<10?"Dobré ráno":h<18?"Dobrý den":"Dobrý večer";
   document.getElementById("hello").textContent=k==="dnes"&&fn?`${greet}, ${fn}`:({dnes:"Masérská kompenzace",cviceni:"Cvičení",pokrok:"Můj pokrok",ergonomie:"Ergonomie",profil:"Profil"})[k];
   view.innerHTML=VIEWS[k]();
   document.querySelectorAll(".tab").forEach(t=>t.toggleAttribute("aria-current",false));
@@ -576,7 +598,7 @@ function finish(){P.done=true;clearInterval(timer);keepAwake(false);beep(880,400
   const now=new Date();const entry={d:iso(now),t:pad(now.getHours())+":"+pad(now.getMinutes()),r:P.id,min:mins(P.id)};S.log.push(entry);save();P.entry=entry;
   const st=streak();
   player.innerHTML=`<div class="box center" style="justify-content:center">
-    <h2>Hotovo${firstName()?", "+esc(firstName()):""}!</h2>
+    <h2>Hotovo${callName()?", "+esc(callName()):""}!</h2>
     <p>${R[P.id].n} · ${minTxt(P.id)}</p>
     <div class="tiles"><div class="tile"><b>${todayCount()}</b><span>dnes</span></div><div class="tile"><b>${st}</b><span>${plural(st,"den","dny","dní")} v řadě</span></div><div class="tile"><b>${weekDays()}</b><span>dní tento týden</span></div></div>
     <div class="field"><span class="lbl">Jak se cítíte?</span><div class="feel">${[["b","Úleva"],["s","Beze změny"],["w","Hůř"]].map(([v,n])=>`<button data-feel="${v}" aria-pressed="false">${n}</button>`).join("")}</div></div>
@@ -694,7 +716,10 @@ document.addEventListener("change",e=>{const t=e.target;
   if(t.dataset.check!==undefined){const d=TODAY(),i=+t.dataset.check;let a=S.check[d]||[];a=t.checked?[...new Set([...a,i])]:a.filter(x=>x!==i);S.check[d]=a;
     Object.keys(S.check).forEach(k=>{if(k<addDays(d,-30))delete S.check[k];});save();render();}
   if(t.dataset.set){S.settings[t.dataset.set]=t.checked;save();}});
-document.addEventListener("input",ev=>{const m=ev.target.id&&ev.target.id.match(/^s-(.+)$/);if(m)document.getElementById("o-"+m[1]).textContent=ev.target.value;});
+document.addEventListener("input",ev=>{const t=ev.target;
+  if(t.dataset.namefor){const c=document.getElementById(t.dataset.namefor+"-call");if(c&&!c.dataset.touched)c.value=vocative(t.value.trim().split(/\s+/)[0]||"");}
+  if(t.id&&/-call$/.test(t.id))t.dataset.touched="1";
+  const m=t.id&&t.id.match(/^s-(.+)$/);if(m)document.getElementById("o-"+m[1]).textContent=ev.target.value;});
 document.addEventListener("submit",ev=>{ev.preventDefault();if(ev.target.id!=="painform")return;
   const e={d:TODAY(),note:document.getElementById("note").value.trim()};REG.forEach(([k])=>e[k]=+document.getElementById("s-"+k).value);
   S.pain=S.pain.filter(x=>x.d!==TODAY());S.pain.push(e);save();render();toast("Záznam uložen");});
